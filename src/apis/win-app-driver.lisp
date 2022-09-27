@@ -74,10 +74,7 @@
  `(let
     ((,g!response (jonathan:parse
                     (protect-for-timeout
-                      (funcall
-                        ,func
-                        (concatenate 'string ,endpoint)
-                        ,@content)))))
+                      (funcall ,func ,endpoint ,@content)))))
     (values (funcall ,accessor ,g!response) ,g!response)))
 
 (defmacro ad-get (endpoint accessor)
@@ -101,15 +98,16 @@
 (defmacro generate-endpoint-uri (session &rest directories)
  `(concatenate
     'string
+    "http://"
     (get-win-app-driver-host-uri ,session)
     ,@directories))
 
-(defmacro send-command (command-type session endpoint &rest content &key (accessor #'get-value))
+(defmacro send-command (command-type session endpoint &optional (accessor #'get-value) &rest content)
   (cond
     ((eq command-type :get)
      `(ad-get (generate-endpoint-uri ,session ,@endpoint) ,accessor))
     ((eq command-type :post)
-     `(ad-post2 (generate-endpoint-uri ,session ,@endpoint) ,accessor ,@content))
+     `(ad-post (generate-endpoint-uri ,session ,@endpoint) ,accessor ,@content))
     ((eq command-type :delete)
      `(ad-delete (generate-endpoint-uri ,session ,@endpoint) ,accessor))
     (t (error "unknown http command error."))))
@@ -153,25 +151,56 @@
     'string
     "{\"desiredCapabilities\":{"
     (aif app
-         "\"app\":\"" it "\""
+         (concatenate 'string "\"app\":\"" it "\"")
          "")
     (aif app-arguments
-         ",\"appArguments\":\"" it "\""
+         (if app
+           (concatenate 'string ",\"appArguments\":\"" it "\"")
+           (concatenate 'string "\"appArguments\":\"" it "\""))
          "")
     (aif app-top-level-window
-         ",\"appTopLevelWindow\":\"" it "\""
+         (if (or app app-arguments)
+           (concatenate 'string ",\"appTopLevelWindow\":\"" it "\"")
+           (concatenate 'string "\"appTopLevelWindow\":\"" it "\""))
          "")
     (aif app-working-dir
-         ",\"appWorkingDir\":\"" it "\""
+         (if (or app app-arguments app-top-level-window)
+           (concatenate 'string ",\"appWorkingDir\":\"" it "\"")
+           (concatenate 'string "\"appWorkingDir\":\"" it "\""))
          "")
-    ",\"platformName\":\"" platform-name "\""
+    (aif platform-name
+         (if (or app app-arguments app-top-level-window app-working-dir)
+           (concatenate 'string ",\"platformName\":\"" it "\"")
+           (concatenate 'string "\"platformName\":\"" it "\""))
+         "")
     (aif platform-version
-         ",\"platformVersion\":\"" it "\""
+         (if (or app app-arguments app-top-level-window app-working-dir platform-name)
+           (concatenate 'string ",\"platformVersion\":\"" it "\"")
+           (concatenate 'string "\"platformVersion\":\"" it "\""))
          "")
     "}}"))
 
+; New Session
 ; POST /session
-;(defapi new-session :post nil)
+(defun new-session (session
+                    &key
+                    (app nil)
+                    (app-arguments nil)
+                    (app-top-level-window nil)
+                    (app-working-dir nil)
+                    (platform-name "Windows")
+                    (platform-version nil))
+  (send-command
+    :post
+    session
+    ("/session")
+    (make-desired-capabilities
+      :app app
+      :app-arguments app-arguments
+      :app-top-level-window app-top-level-window
+      :app-working-dir app-working-dir
+      :platform-name platform-name
+      :platform-version platform-version)))
 
 ;GET 	/sessions
 ;(defapi get-sessions :get ("/sessions"))

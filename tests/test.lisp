@@ -14,133 +14,6 @@
 (defparameter *win-app-driver-host* "localhost")
 (defparameter *win-app-driver-port* 35368)
 
-;; Test for macro with-session
-; (defun open-foo-site (url)
-;   (with-session
-;     (wds :port 35367 :host "localhost")
-;     (wds :maximize-window)
-;     (wds :navigate-to url)
-;     (foo (wds :get-element-text (wds :get-session-id :xpath "//bar")))))
-; =>
-; (defun open-foo-site (url)
-;   (let
-;     ((,(first args) (create-session))
-;      ($host (aif (getf (rest args) :host) it "localhost"))
-;      ($port (aif (getf (rest args) :port) it 9515)))
-;     (unwind-protect
-;       (progn
-;         (funcall ,(first args) :new-session :host $host :port $port)
-;         (progn
-;           (funcall ,(first args) :maximize-window)                                                                 ; bodyを深さ優先で展開させる
-;           (funcall ,(first args) :navigate-to url)                                                                 ;
-;           (foo (funcall ,(first args) :get-element-text (funcall ,(first args) :get-session-id :xpath "//bar"))))) ;
-;       (progn
-;         (funcall ,(first args) :delete-session)))))
-(defun maptree/df-testing-subfn-if-even-collect (left right)
-  "testing sample closure"
-  (cond
-    ((and
-       (integerp left)
-       (integerp right)
-       (evenp left)
-       (evenp right))
-     (cons left `(,right)))
-    ((and
-       (integerp left)
-       (oddp left)
-       (consp right))
-     right)
-    ((and
-       (integerp right)
-       (oddp right)
-       (consp left))
-     left)
-    ((and
-       (integerp left)
-       (oddp left)
-       (null right))
-     nil)
-    ((and
-       (integerp left)
-       (oddp left))
-     `(,right))
-    ((and
-       (null left)
-       (integerp right)
-       (oddp right))
-     nil)
-    ((and
-       (integerp right)
-       (oddp right))
-     (cons left nil))
-    ((and
-       (null left)
-       (consp right))
-     right)
-    ((and
-       (null left)
-       (null right))
-     nil)
-    (t
-      (cons left right))))
-
-(subtest "Test for function maptree/df"
-         (is
-           (win-app-driver::maptree/df (lambda (x) x) nil)
-           nil)
-
-         (is
-           (win-app-driver::maptree/df (lambda (x) (* 2 x)) nil)
-           nil)
-
-         (is
-           (win-app-driver::maptree/df (lambda (x) x) (list 1))
-           (list 1))
-
-         (is
-           (win-app-driver::maptree/df (lambda (x) x) `(1 2 (3 4 (5) (6 (7)) 8)))
-           `(1 2 (3 4 (5) (6 (7)) 8)))
-
-         (is
-           (win-app-driver::maptree/df (lambda (x) (+ x x)) `(1 2 (3 4 (5) (6 (7)) 8)))
-           `(2 4 (6 8 (10) (12 (14)) 16)))
-
-         (is
-           (win-app-driver::maptree/df
-             (lambda (x) x)
-             nil
-             :collector #'win-app-driver/tests:maptree/df-testing-subfn-if-even-collect)
-           nil)
-
-         (is
-           (win-app-driver::maptree/df
-             (lambda (x) x)
-             `(1)
-             :collector #'win-app-driver/tests:maptree/df-testing-subfn-if-even-collect)
-           nil)
-
-         (is
-           (win-app-driver::maptree/df
-             (lambda (x) x)
-             `(2)
-             :collector #'win-app-driver/tests:maptree/df-testing-subfn-if-even-collect)
-           `(2))
-
-         (is
-           (win-app-driver::maptree/df
-             (lambda (x) x)
-             `(1 2 (3 4 (5) (6 (7)) 8))
-             :collector #'win-app-driver/tests:maptree/df-testing-subfn-if-even-collect)
-           `(2 (4 (6) 8)))
-
-         (is
-           (win-app-driver::maptree/df
-             (lambda (x) (* 2 x))
-             `(1 2 (3 4 (5) (6 (7)) 8))
-             :collector #'win-app-driver/tests:maptree/df-testing-subfn-if-even-collect)
-           `(2 4 (6 8 (10) (12 (14)) 16)))
-         )
-
 (subtest "Testing generate-desired-capabilities"
          (is
            (win-app-driver::make-desired-capabilities)
@@ -156,20 +29,20 @@
          (is
            (win-app-driver::make-desired-capabilities
              :app "Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge"
-             :app-args "https://github.com/Microsoft/WinAppDriver"
+             :app-arguments "https://github.com/Microsoft/WinAppDriver"
              :app-top-level-window "0xB822E2"
              :app-working-dir "C:\\Temp"
              :platform-name "Windows"
              :platform-version "1.0")
-           "{\"desiredCapabilities\":{\"app\":\"Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge\",\"appArgs\":\"https://github.com/Microsoft/WinAppDriver\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\Temp\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
+           "{\"desiredCapabilities\":{\"app\":\"Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge\",\"appArguments\":\"https://github.com/Microsoft/WinAppDriver\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\Temp\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
          (is
            (win-app-driver::make-desired-capabilities
-             :app-args "https://github.com/Microsoft/WinAppDriver"
+             :app-arguments "https://github.com/Microsoft/WinAppDriver"
              :app-top-level-window "0xB822E2"
              :app-working-dir "C:\\Temp"
              :platform-name "Windows"
              :platform-version "1.0")
-           "{\"desiredCapabilities\":{\"appArgs\":\"https://github.com/Microsoft/WinAppDriver\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\Temp\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
+           "{\"desiredCapabilities\":{\"appArguments\":\"https://github.com/Microsoft/WinAppDriver\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\Temp\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
          (is
            (win-app-driver::make-desired-capabilities
              :app-top-level-window "0xB822E2"
