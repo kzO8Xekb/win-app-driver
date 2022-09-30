@@ -12,20 +12,34 @@
 (plan nil)
 
 (defparameter *win-app-driver-host* "localhost")
-(defparameter *win-app-driver-port* 35368)
+(defparameter *win-app-driver-port* 12345)
+
+(subtest "Testing get-win-app-driver-host-uri"
+         (let
+           ((session (win-app-driver::create-session)))
+           (funcall session :pandoric-set 'win-app-driver::host "localhost")
+           (funcall session :pandoric-set 'win-app-driver::port 12345)
+           (is
+             (win-app-driver::get-win-app-driver-host-uri session)
+             "localhost:12345")
+           (funcall session :pandoric-set 'win-app-driver::host "127.0.0.1")
+           (funcall session :pandoric-set 'win-app-driver::port 54321)
+           (is
+             (win-app-driver::get-win-app-driver-host-uri session)
+             "127.0.0.1:54321")))
 
 (subtest "Testing generate-desired-capabilities"
          (is
            (win-app-driver::make-desired-capabilities)
-           "{\"desiredCapabilities\":{\"platformName\":\"Windows\"}}")
+           "{\"desiredCapabilities\":{\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\"}}")
          (is
            (win-app-driver::make-desired-capabilities
              :app "C:\\Windows\\System32\\notepad.exe")
-           "{\"desiredCapabilities\":{\"app\":\"C:\\Windows\\System32\\notepad.exe\",\"platformName\":\"Windows\"}}")
+           "{\"desiredCapabilities\":{\"app\":\"C:\\\\Windows\\\\System32\\\\notepad.exe\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\"}}")
          (is
            (win-app-driver::make-desired-capabilities
              :app "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App")
-           "{\"desiredCapabilities\":{\"app\":\"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App\",\"platformName\":\"Windows\"}}")
+           "{\"desiredCapabilities\":{\"app\":\"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\"}}")
          (is
            (win-app-driver::make-desired-capabilities
              :app "Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge"
@@ -34,7 +48,7 @@
              :app-working-dir "C:\\Temp"
              :platform-name "Windows"
              :platform-version "1.0")
-           "{\"desiredCapabilities\":{\"app\":\"Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge\",\"appArguments\":\"https://github.com/Microsoft/WinAppDriver\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\Temp\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
+           "{\"desiredCapabilities\":{\"app\":\"Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge\",\"appArguments\":\"https://github.com/Microsoft/WinAppDriver\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\\\Temp\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
          (is
            (win-app-driver::make-desired-capabilities
              :app-arguments "https://github.com/Microsoft/WinAppDriver"
@@ -42,36 +56,36 @@
              :app-working-dir "C:\\Temp"
              :platform-name "Windows"
              :platform-version "1.0")
-           "{\"desiredCapabilities\":{\"appArguments\":\"https://github.com/Microsoft/WinAppDriver\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\Temp\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
+           "{\"desiredCapabilities\":{\"appArguments\":\"https://github.com/Microsoft/WinAppDriver\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\\\Temp\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
          (is
            (win-app-driver::make-desired-capabilities
              :app-top-level-window "0xB822E2"
              :app-working-dir "C:\\Temp"
              :platform-name "Windows"
              :platform-version "1.0")
-           "{\"desiredCapabilities\":{\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\Temp\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
+           "{\"desiredCapabilities\":{\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\\\Temp\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
          (is
            (win-app-driver::make-desired-capabilities
              :app-working-dir "C:\\Temp"
              :platform-name "Windows"
              :platform-version "1.0")
-           "{\"desiredCapabilities\":{\"appWorkingDir\":\"C:\\Temp\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
+           "{\"desiredCapabilities\":{\"appWorkingDir\":\"C:\\\\Temp\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
          (is
            (win-app-driver::make-desired-capabilities
              :platform-name "Windows"
              :platform-version "1.0")
-           "{\"desiredCapabilities\":{\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
+           "{\"desiredCapabilities\":{\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
          (is
            (win-app-driver::make-desired-capabilities
              :platform-version "1.0")
-           "{\"desiredCapabilities\":{\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
+           "{\"desiredCapabilities\":{\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
          (is
            (win-app-driver::make-desired-capabilities
              :app "Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge"
              :app-top-level-window "0xB822E2"
              :app-working-dir "C:\\Temp"
              :platform-version "1.0")
-           "{\"desiredCapabilities\":{\"app\":\"Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\Temp\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
+           "{\"desiredCapabilities\":{\"app\":\"Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\\\Temp\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
          )
 
 ;(subtest "Test for macro expand-with-session-body"

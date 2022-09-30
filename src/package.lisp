@@ -31,6 +31,8 @@
   ; apis/win-app-driver.lisp
   (:export :create-session
            :expand-with-session-body
+           :self
+           :this
            :with-session)
 
   ; utilities/util.lisp

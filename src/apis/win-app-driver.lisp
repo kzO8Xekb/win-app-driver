@@ -1,26 +1,29 @@
-;;; MIT License
-;;; 
-;;; Copyright (c) 2022 kzO8Xekb
-;;; 
-;;; Permission is hereby granted, free of charge, to any person obtaining a copy
-;;; of this software and associated documentation files (the "Software"), to deal
-;;; in the Software without restriction, including without limitation the rights
-;;; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-;;; copies of the Software, and to permit persons to whom the Software is
-;;; furnished to do so, subject to the following conditions:
-;;; 
-;;; The above copyright notice and this permission notice shall be included in all
-;;; copies or substantial portions of the Software.
-;;; 
-;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-;;; SOFTWARE.
+;;;; MIT License
+;;;; 
+;;;; Copyright (c) 2022 kzO8Xekb
+;;;; 
+;;;; Permission is hereby granted, free of charge, to any person obtaining a copy
+;;;; of this software and associated documentation files (the "Software"), to deal
+;;;; in the Software without restriction, including without limitation the rights
+;;;; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+;;;; copies of the Software, and to permit persons to whom the Software is
+;;;; furnished to do so, subject to the following conditions:
+;;;; 
+;;;; The above copyright notice and this permission notice shall be included in all
+;;;; copies or substantial portions of the Software.
+;;;; 
+;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+;;;; SOFTWARE.
 
 (in-package :win-app-driver)
+
+(defparameter http-header-accept "application/json, image/png")
+(defparameter http-header-content-type  "application/json; charset=UTF-8")
 
 ;;; HTTP/HTTPS Utilities
 (lol:defmacro! protect-for-timeout (&rest body)
@@ -45,15 +48,16 @@
 
 (defparameter empty-data "{\"\": \"\"}")
 
-(declaim (inline post-json))
+;(declaim (inline post-json))
 (defun post-json (uri content)
   "uriのエンドポイントにjsonをPOSTします。"
   (dex:post uri
             :content content
-            :headers `(("accept-type" . "application/json")
-                       ("content-type" . "application/json; charset=UTF-8"))))
+            :headers `(("accept" . http-header-accept)
+                       ("accept-type" . http-header-accept)
+                       ("content-type" . http-header-content-type))))
 
-(declaim (inline post-json2))
+;(declaim (inline post-json2))
 (defun post-json2 (uri content)
   "uriのエンドポイントにjsonをPOSTします。"
   (post-json uri (jonathan:to-json content)))
@@ -86,30 +90,54 @@
 (defmacro ad-post (endpoint accessor &rest content)
   `(invoke-win-app-driver-api #'post-json2 ,endpoint ,accessor ,@content))
 
-(declaim (inline get-win-app-driver-host-uri))
+(defun correct-host-identifier (host-identifier)
+  (and
+    (eq 'string (car (type-of host-identifier)))
+    (or
+      (string= "localhost" host-identifier)
+      (cl-ppcre:scan
+        "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
+        host-identifier))))
+
+(defun correct-port-number-p (number)
+  (and
+    (eq 'integer (car (type-of number)))
+    (<= 1 number 65535)))
+
 (defun get-win-app-driver-host-uri (session)
-  (concatenate
-    'string
-    (funcall session :pandoric-get 'host)
-    ":"
-    (write-to-string
-      (funcall session :pandoric-get 'port))))
+  (let
+    ((host-identifier (funcall session :pandoric-get 'host))
+     (port-number     (funcall session :pandoric-get 'port)))
+    (flet
+      ((validate-host-identifier-p ()
+                                   (and
+                                     (correct-host-identifier host-identifier)
+                                     (correct-port-number-p port-number))))
+      (make-error-condition-if
+        #'validate-host-identifier-p
+        'condition-incorrect-arguments)
+      (concatenate
+        'string
+        host-identifier
+        ":"
+        (write-to-string
+          port-number)))))
 
 (defmacro generate-endpoint-uri (session &rest directories)
- `(concatenate
-    'string
-    "http://"
-    (get-win-app-driver-host-uri ,session)
-    ,@directories))
+  `(concatenate
+     'string
+     "http://"
+     (get-win-app-driver-host-uri ,session)
+     ,@directories))
 
 (defmacro send-command (command-type session endpoint &optional (accessor #'get-value) &rest content)
   (cond
     ((eq command-type :get)
-     `(ad-get (generate-endpoint-uri ,session ,@endpoint) ,accessor))
+     `(ad-get (generate-endpoint-uri ,session `(,,@endpoint)) ,accessor))
     ((eq command-type :post)
-     `(ad-post (generate-endpoint-uri ,session ,@endpoint) ,accessor ,@content))
+     `(ad-post (generate-endpoint-uri ,session `(,,@endpoint)) ,accessor ,@content))
     ((eq command-type :delete)
-     `(ad-delete (generate-endpoint-uri ,session ,@endpoint) ,accessor))
+     `(ad-delete (generate-endpoint-uri ,session `(,,@endpoint)) ,accessor))
     (t (error "unknown http command error."))))
 
 ;; Command Summary
@@ -128,57 +156,42 @@
 ;  (send-command :get ("/status")))
 
 ; New Session
-(defun make-desired-capabilities
-  (&key
-    (app nil)
-    (app-arguments nil)
-    (app-top-level-window nil)
-    (app-working-dir nil)
-    (platform-name "Windows")
-    (platform-version nil))
+(defun make-desired-capabilities (&key
+                                   (app nil)
+                                   (app-arguments nil)
+                                   (app-top-level-window nil)
+                                   (app-working-dir nil)
+                                   (device-name "WindowsPC")
+                                   (platform-name "Windows")
+                                   (platform-version nil))
   "make-desired-capabilities
    _/_/_/ 概要 _/_/_/
    WinAppDriverとのsessionを確立するために必要なdesired capabilitiesを作成します。
    
    _/_/_/ 引数 _/_/_/
-   app,                  [key]app: Application identifier or executable full path. ex. Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge
-   app-arguments,        [key]appArguments: Application launch arguments. ex. https://github.com/Microsoft/WinAppDriver
+   app,                  [key]app:               Application identifier or executable full path. ex. Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge
+   app-arguments,        [key]appArguments:      Application launch arguments. ex. https://github.com/Microsoft/WinAppDriver
    app-top-level-window, [key]appTopLevelWindow: Existing application top level window to attach to. ex. 0xB822E2
-   app-working-dir,      [key]appWorkingDir: Application working directory (Classic apps only). ex. C:\Temp
-   platform-name,        [key]platformName: Target platform name. ex. Windows
-   platform-version,     [key]platformVersion: Target platform version. ex. 1.0"
-  (concatenate
-    'string
-    "{\"desiredCapabilities\":{"
-    (aif app
-         (concatenate 'string "\"app\":\"" it "\"")
-         "")
-    (aif app-arguments
-         (if app
-           (concatenate 'string ",\"appArguments\":\"" it "\"")
-           (concatenate 'string "\"appArguments\":\"" it "\""))
-         "")
-    (aif app-top-level-window
-         (if (or app app-arguments)
-           (concatenate 'string ",\"appTopLevelWindow\":\"" it "\"")
-           (concatenate 'string "\"appTopLevelWindow\":\"" it "\""))
-         "")
-    (aif app-working-dir
-         (if (or app app-arguments app-top-level-window)
-           (concatenate 'string ",\"appWorkingDir\":\"" it "\"")
-           (concatenate 'string "\"appWorkingDir\":\"" it "\""))
-         "")
-    (aif platform-name
-         (if (or app app-arguments app-top-level-window app-working-dir)
-           (concatenate 'string ",\"platformName\":\"" it "\"")
-           (concatenate 'string "\"platformName\":\"" it "\""))
-         "")
-    (aif platform-version
-         (if (or app app-arguments app-top-level-window app-working-dir platform-name)
-           (concatenate 'string ",\"platformVersion\":\"" it "\"")
-           (concatenate 'string "\"platformVersion\":\"" it "\""))
-         "")
-    "}}"))
+   app-working-dir,      [key]appWorkingDir:     Application working directory (Classic apps only). ex. C:\Temp
+   device-name,          [key]deviceName:        Application working device type name. ex. WindowsPC
+   platform-name,        [key]platformName:      Target platform name. ex. Windows
+   platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
+  (jonathan:to-json
+    `(:|desiredCapabilities|
+       (,@(aif app
+               `(:|app| ,it))
+        ,@(aif app-arguments
+               `(:|appArguments| ,it))
+        ,@(aif app-top-level-window
+               `(:|appTopLevelWindow| ,it))
+        ,@(aif app-working-dir
+               `(:|appWorkingDir| ,it))
+        ,@(aif device-name
+               `(:|deviceName| ,it))
+        ,@(aif platform-name
+               `(:|platformName| ,it))
+        ,@(aif platform-version
+               `(:|platformVersion| ,it))))))
 
 ; New Session
 ; POST /session
@@ -188,6 +201,7 @@
                     (app-arguments nil)
                     (app-top-level-window nil)
                     (app-working-dir nil)
+                    (device-name "WindowsPC")
                     (platform-name "Windows")
                     (platform-version nil))
   (send-command
@@ -199,6 +213,7 @@
       :app-arguments app-arguments
       :app-top-level-window app-top-level-window
       :app-working-dir app-working-dir
+      :device-name device-name
       :platform-name platform-name
       :platform-version platform-version)))
 
@@ -266,11 +281,30 @@
 
 (defun create-session ()
   (lol:pandoriclet
-    ((capabilities nil)
-     (host "localhost")
-     (port 4723)
-     (session-id nil)
-     (session-base nil))
-    (lol:dlambda
-      (:status () (status)))))
+    (capabilities
+     host
+     port
+     session-id
+     session-base)
+    (let
+      (this self)
+      (setq
+        this (lol:dlambda
+               (:initialize () nil)
+               (:new-session (&key
+                               (app nil)
+                               (app-arguments nil)
+                               (app-top-level-window nil)
+                               (app-working-dir nil)
+                               (device-name "WindowsPC")
+                               (host-identifier "localhost")
+                               (platform-name "Windows")
+                               (platform-version nil)
+                               (port-number 4723))
+                             (setq
+                               host host-identifier
+                               port port-number)
+                             (new-session self app app-arguments app-top-level-window app-working-dir device-name platform-name platform-version)))
+        self (lambda (&rest args)
+               (apply this args))))))
 
