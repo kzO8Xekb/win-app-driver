@@ -22,14 +22,25 @@
 
 (in-package :win-app-driver)
 
-(defparameter http-header-accept "application/json, image/png")
-(defparameter http-header-content-type  "application/json; charset=UTF-8")
+(defparameter +http-header-accept+       "application/json, image/png")
+(defparameter +http-header-content-type+ "application/json; charset=UTF-8")
+(defparameter +empty-data+               "{\"\": \"\"}")
+
+(defstruct session-data
+  (capabilities nil)
+  (host          "")
+  (port           0)
+  (id            "")
+  (base          ""))
 
 ;;; HTTP/HTTPS Utilities
 (lol:defmacro! protect-for-timeout (&rest body)
  `(let
-    (,g!result
-      (,g!sleep-time -1))
+    (,g!dexador-response-hash-table
+     ,g!dexador-response-quri-uri
+     ,g!server-response-message
+     ,g!server-response-status-code
+     (,g!sleep-time -1))
     (tagbody
       ,g!tag-start
       (handler-bind
@@ -41,21 +52,25 @@
                  (sleep ,g!sleep-time)
                  (go ,g!tag-start)))))) ; やり直し
         (progn
-          (setf ,g!result (progn ,@body))
+          (setf
+            (values
+              ,g!server-response-message
+              ,g!server-response-status-code
+              ,g!dexador-response-hash-table
+              ,g!dexador-response-quri-uri)
+            (progn ,@body))
           (go ,g!tag-finish)))
       ,g!tag-finish)
-    ,g!result))
-
-(defparameter empty-data "{\"\": \"\"}")
+    (values ,g!server-response-message ,g!server-response-status-code ,g!dexador-response-hash-table ,g!dexador-response-quri-uri)))
 
 ;(declaim (inline post-json))
 (defun post-json (uri content)
   "uriのエンドポイントにjsonをPOSTします。"
   (dex:post uri
             :content content
-            :headers `(("accept" . http-header-accept)
-                       ("accept-type" . http-header-accept)
-                       ("content-type" . http-header-content-type))))
+            :headers `(("accept"       . ,+http-header-accept+)
+                       ("accept-type"  . ,+http-header-accept+)
+                       ("content-type" . ,+http-header-content-type+))))
 
 ;(declaim (inline post-json2))
 (defun post-json2 (uri content)
@@ -74,71 +89,175 @@
 ;  (jonathan:parse
 ;    (post-json2 uri content)))
 
-(lol:defmacro! invoke-win-app-driver-api (func endpoint accessor &rest content)
+(lol:defmacro! invoke-win-app-driver-api%0 (func endpoint &key (accessor #'get-value) (content nil))
  `(let
     ((,g!response (jonathan:parse
                     (protect-for-timeout
-                      (funcall ,func ,endpoint ,@content)))))
+                      ,(if (null content)
+                         `(funcall ,func ,endpoint)
+                         `(funcall ,func ,endpoint ,content))))))
     (values (funcall ,accessor ,g!response) ,g!response)))
 
-(defmacro ad-get (endpoint accessor)
-  `(invoke-win-app-driver-api #'dexador:get ,endpoint ,accessor))
+(lol:defmacro! invoke-win-app-driver-api (func endpoint &key (content nil))
+ `(multiple-value-bind
+    (,g!server-response-message ,g!server-response-status-code ,g!dexador-response-hash-table ,g!dexador-response-quri-uri)
+    (protect-for-timeout
+      ,(if (null content)
+         `(funcall ,func ,endpoint)
+         `(funcall ,func ,endpoint ,content)))
+    (values
+      ,g!server-response-message
+      ,g!server-response-status-code
+      ,g!dexador-response-hash-table
+      ,g!dexador-response-quri-uri)))
 
-(defmacro ad-delete (endpoint accessor)
-  `(invoke-win-app-driver-api #'dexador:delete ,endpoint ,accessor))
+(defun ad-get (endpoint) ; adはapplication driverの省略。
+  (invoke-win-app-driver-api #'dexador:get endpoint))
 
-(defmacro ad-post (endpoint accessor &rest content)
-  `(invoke-win-app-driver-api #'post-json2 ,endpoint ,accessor ,@content))
+(defun ad-delete (endpoint)
+  (invoke-win-app-driver-api #'dexador:delete endpoint))
 
-(defun correct-host-identifier (host-identifier)
-  (and
-    (eq 'string (car (type-of host-identifier)))
-    (or
-      (string= "localhost" host-identifier)
-      (cl-ppcre:scan
-        "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
-        host-identifier))))
+(defun ad-post (endpoint content)
+  (invoke-win-app-driver-api
+    #'post-json
+    endpoint
+    :content content))
+
+(defun ipv4-address-p (host-identifier)
+  (multiple-value-bind
+    (start end)
+    (cl-ppcre:scan
+      "^(([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+      host-identifier)
+    (values start end)))
+
+(defun rfc4291-address-p (host-identifier)
+  "引数で指定した文字列がRFC4291に適合するIPv6アドレスの文字列表現であるか照合します。"
+  (multiple-value-bind
+    (start end)
+    (cl-ppcre:scan
+      "^((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?$"
+      host-identifier)
+    (values start end)))
+
+(defun ipv6-address-p (host-identifier)
+  "引数で指定した文字列が\"[\"と\"]\"で囲まれたIPv6アドレスの文字列表現であるか照合します。"
+  (multiple-value-bind
+    (start end)
+    (cl-ppcre:scan
+      "^\\[((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\\]$"
+      host-identifier)
+    (values start end)))
+
+(defun hostname-p (host-identifier)
+  "引数で指定した文字列がRFC952及びRFC1123に適合する文字列か照合します。"
+  (flet
+    ((label-length-p (itr)
+                     (and
+                       (<= 1 (length host-identifier) 255)
+                       (<= 1 (length itr) 63)))
+     (label-character-p (itr)
+                        (multiple-value-bind
+                          (start end)
+                          (ppcre:scan "^(?!.*-$)[0-9A-Za-z\\-]+$" itr)
+                          (values start end))))
+    (let
+      ((start 0)
+       (end   0))
+      (loop :for itr :in (ppcre:split "\\." host-identifier)
+            :do (progn
+                  (cond
+                    ((and (label-length-p itr) (label-character-p itr))
+                     (incf end (length itr)))
+                    (t (setf start nil
+                             end   nil)
+                       (return)))))
+      (values start end))))
+
+(declaim (ftype (function (string) (values (or string null) (member t) &optional)) correct-hostname-string-p))
+(defun correct-hostname-string-p (host-identifier)
+"correct-hostname-string-p
+_/_/_/ 概要 _/_/_/
+引数で指定した文字列が，ホスト名に適合するか照合します。
+文字列がマッチした場合は，第1返り値を引数で指定した文字列，第2返り値をtとした多値で返します。
+マッチしなければ，第1及び第2返り値ともにnilとした多値で返します。
+
+_/_/_/ 引数 _/_/_/
+host-identifier, string: 照合したい文字列を指定します。
+
+_/_/_/ 返り値 _/_/_/
+string or nil, 照合成功した場合は引数で指定した文字列。失敗時はnil。
+t or nil,      関数の成功時はt，失敗時はnil。"
+  (let
+    (start end)
+    (cond
+      ((setf (values start end) (ipv4-address-p host-identifier))
+       (values host-identifier t))
+      ((setf (values start end) (ipv6-address-p host-identifier)) ; 正確にはRFC4291ではない。
+       (values host-identifier t))
+      ((setf (values start end) (hostname-p host-identifier))
+       (values host-identifier t))
+      (t (values nil t)))))
 
 (defun correct-port-number-p (number)
+  (declare (type (integer number)))
   (and
-    (eq 'integer (car (type-of number)))
+    (eq
+      'integer
+      (aif (type-of number)
+           (if (listp it)
+             (car it)
+             it)))
     (<= 1 number 65535)))
 
 (defun get-win-app-driver-host-uri (session)
-  (let
-    ((host-identifier (funcall session :pandoric-get 'host))
-     (port-number     (funcall session :pandoric-get 'port)))
-    (flet
-      ((validate-host-identifier-p ()
-                                   (and
-                                     (correct-host-identifier host-identifier)
-                                     (correct-port-number-p port-number))))
-      (make-error-condition-if
-        #'validate-host-identifier-p
-        'condition-incorrect-arguments)
-      (concatenate
-        'string
-        host-identifier
-        ":"
-        (write-to-string
-          port-number)))))
+  (make-condition-if
+    (complement #'correct-hostname-string-p)
+    ((session-data-host session))
+    error
+    'condition-incorrect-hostname-string
+    'get-win-app-driver-host-uri)
+  (make-condition-if
+    (complement #'correct-port-number-p)
+    ((session-data-port session))
+    error
+    'condition-incorrect-port-number
+    'get-win-app-driver-host-uri)
+  (concatenate
+    'string
+    (session-data-host session)
+    ":"
+    (write-to-string
+      (session-data-port session))))
 
-(defmacro generate-endpoint-uri (session &rest directories)
-  `(concatenate
-     'string
-     "http://"
-     (get-win-app-driver-host-uri ,session)
-     ,@directories))
+(defun generate-endpoint-uri (session &rest directories)
+  (apply
+    #'concatenate
+    `(string
+      "http://"
+      ,(get-win-app-driver-host-uri session)
+      ,@directories)))
 
-(defmacro send-command (command-type session endpoint &optional (accessor #'get-value) &rest content)
+(defmacro send-command (session command-type endpoint &optional (content nil))
   (cond
     ((eq command-type :get)
-     `(ad-get (generate-endpoint-uri ,session `(,,@endpoint)) ,accessor))
+     `(progn
+        (ad-get
+          (generate-endpoint-uri ,session ,@endpoint))))
     ((eq command-type :post)
-     `(ad-post (generate-endpoint-uri ,session `(,,@endpoint)) ,accessor ,@content))
+     `(progn
+        (ad-post
+          (generate-endpoint-uri ,session ,@endpoint)
+          ,content)))
     ((eq command-type :delete)
-     `(ad-delete (generate-endpoint-uri ,session `(,,@endpoint)) ,accessor))
-    (t (error "unknown http command error."))))
+     `(progn
+        (ad-delete
+          (generate-endpoint-uri ,session ,@endpoint))))
+    (t `(progn
+          (error
+            (make-condition
+              'condition-unknown-http-command-error
+              :caller 'send-command))))))
 
 ;; Command Summary
 ;; see https://github.com/microsoft/WinAppDriver/blob/master/Docs/SupportedAPIs.md
@@ -150,7 +269,7 @@
 (defun status ()
   (ad-get
     (generate-endpoint-uri "/status")
-    #'get-value))
+    :accessor #'get-value))
 
 ;(defun status ()
 ;  (send-command :get ("/status")))
@@ -165,63 +284,51 @@
                                    (platform-name "Windows")
                                    (platform-version nil))
   "make-desired-capabilities
-   _/_/_/ 概要 _/_/_/
-   WinAppDriverとのsessionを確立するために必要なdesired capabilitiesを作成します。
-   
-   _/_/_/ 引数 _/_/_/
-   app,                  [key]app:               Application identifier or executable full path. ex. Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge
-   app-arguments,        [key]appArguments:      Application launch arguments. ex. https://github.com/Microsoft/WinAppDriver
-   app-top-level-window, [key]appTopLevelWindow: Existing application top level window to attach to. ex. 0xB822E2
-   app-working-dir,      [key]appWorkingDir:     Application working directory (Classic apps only). ex. C:\Temp
-   device-name,          [key]deviceName:        Application working device type name. ex. WindowsPC
-   platform-name,        [key]platformName:      Target platform name. ex. Windows
-   platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
+_/_/_/ 概要 _/_/_/
+WinAppDriverとのsessionを確立するために必要なdesired capabilitiesを作成します。
+
+_/_/_/ 引数 _/_/_/
+app,                  [key]app:               Application identifier or executable full path. ex. Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge
+app-arguments,        [key]appArguments:      Application launch arguments. ex. https://github.com/Microsoft/WinAppDriver
+app-top-level-window, [key]appTopLevelWindow: Existing application top level window to attach to. ex. 0xB822E2
+app-working-dir,      [key]appWorkingDir:     Application working directory (Classic apps only). ex. C:\Temp
+device-name,          [key]deviceName:        Application working device type name. ex. WindowsPC
+platform-name,        [key]platformName:      Target platform name. ex. Windows
+platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
+(concatenate
+  'string
   (jonathan:to-json
     `(:|desiredCapabilities|
        (,@(aif app
                `(:|app| ,it))
-        ,@(aif app-arguments
-               `(:|appArguments| ,it))
-        ,@(aif app-top-level-window
-               `(:|appTopLevelWindow| ,it))
-        ,@(aif app-working-dir
-               `(:|appWorkingDir| ,it))
-        ,@(aif device-name
-               `(:|deviceName| ,it))
-        ,@(aif platform-name
-               `(:|platformName| ,it))
-        ,@(aif platform-version
-               `(:|platformVersion| ,it))))))
+         ,@(aif app-arguments
+                `(:|appArguments| ,it))
+         ,@(aif app-top-level-window
+                `(:|appTopLevelWindow| ,it))
+         ,@(aif app-working-dir
+                `(:|appWorkingDir| ,it))
+         ,@(aif device-name
+                `(:|deviceName| ,it))
+         ,@(aif platform-name
+                `(:|platformName| ,it))
+         ,@(aif platform-version
+                `(:|platformVersion| ,it)))))))
 
 ; New Session
 ; POST /session
-(defun new-session (session
-                    &key
-                    (app nil)
-                    (app-arguments nil)
-                    (app-top-level-window nil)
-                    (app-working-dir nil)
-                    (device-name "WindowsPC")
-                    (platform-name "Windows")
-                    (platform-version nil))
+(defun new-session (session)
   (send-command
-    :post
     session
+    :post
     ("/session")
-    (make-desired-capabilities
-      :app app
-      :app-arguments app-arguments
-      :app-top-level-window app-top-level-window
-      :app-working-dir app-working-dir
-      :device-name device-name
-      :platform-name platform-name
-      :platform-version platform-version)))
+    (session-data-capabilities session)))
 
 ;GET 	/sessions
 ;(defapi get-sessions :get ("/sessions"))
 
 ;DELETE 	/session/:sessionId
-;(defapi delete-session :delete (session-base session-id))
+(defun delete-session (session)
+  (send-command session :delete ((session-data-base session))))
 
 ;POST 	/session/:sessionId/appium/app/launch
 ;POST 	/session/:sessionId/appium/app/close
@@ -281,30 +388,55 @@
 
 (defun create-session ()
   (lol:pandoriclet
-    (capabilities
-     host
-     port
-     session-id
-     session-base)
+    ((session nil))
     (let
-      (this self)
+      (impl self)
       (setq
-        this (lol:dlambda
-               (:initialize () nil)
+        impl (lol:dlambda
                (:new-session (&key
-                               (app nil)
-                               (app-arguments nil)
+                               (app                  nil)
+                               (app-arguments        nil)
                                (app-top-level-window nil)
-                               (app-working-dir nil)
-                               (device-name "WindowsPC")
-                               (host-identifier "localhost")
-                               (platform-name "Windows")
-                               (platform-version nil)
-                               (port-number 4723))
-                             (setq
-                               host host-identifier
-                               port port-number)
-                             (new-session self app app-arguments app-top-level-window app-working-dir device-name platform-name platform-version)))
+                               (app-working-dir      nil)
+                               (device-name          "WindowsPC")
+                               (host                 "localhost")
+                               (platform-name        "Windows")
+                               (platform-version     nil)
+                               (port                 4723))
+                             (setf session (make-session-data
+                                             :host host
+                                             :port port
+                                             :capabilities (make-desired-capabilities
+                                                             :app                  app
+                                                             :app-arguments        app-arguments
+                                                             :app-top-level-window app-top-level-window
+                                                             :app-working-dir      app-working-dir
+                                                             :device-name          device-name
+                                                             :platform-name        platform-name
+                                                             :platform-version     platform-version)))
+                             (multiple-value-bind
+                               (json status-code hash quri)
+                               (new-session session)
+                               (progn
+                                 (setf (session-data-id session) (getf (jonathan:parse json) :|sessionId|))
+                                 (setf (session-data-base session)
+                                       (concatenate
+                                         'string
+                                         "/session/"
+                                         (session-data-id session)
+                                         "/"))
+                                 (values json status-code hash quri session))))
+               (:delete-session ()
+                                (cond
+                                  (session
+                                    (multiple-value-bind
+                                      (json status-code hash quri)
+                                      (delete-session session)
+                                      (progn
+                                        (setf session nil)
+                                        (values json status-code hash quri))))
+                                  (t (values nil nil nil nil)))))
+
         self (lambda (&rest args)
-               (apply this args))))))
+               (apply impl args))))))
 

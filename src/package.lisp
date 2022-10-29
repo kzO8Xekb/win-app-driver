@@ -25,15 +25,48 @@
   (:import-from :dexador)
   (:import-from :jonathan)
   (:import-from :let-over-lambda)
+  (:import-from :local-time)
   (:import-from :trivial-macroexpand-all)
   (:import-from :uiop)
   
+  ; conditions/conditions.lisp
+  (:export
+    :condition-incorrect-arguments
+    :condition-incorrect-hostname-string
+    :condition-incorrect-port-number
+    :condition-unexpected-error
+    :condition-unknown-http-command-error
+    :define-conditions
+;    :expand-define-condition
+    :finish
+    :make-condition-if
+    :make-error-condition-if
+    :make-signal-condition-if
+    :make-warning-condition-if
+    :progn-on-preconditions
+    :progn-to-postconditions
+    :progn-with-recovery-conditions
+    :try-again
+    :win-app-driver-error-condition
+    :win-app-driver-simple-condition
+    :win-app-driver-warning-condition
+    )
+
   ; apis/win-app-driver.lisp
-  (:export :create-session
-           :expand-with-session-body
-           :self
-           :this
-           :with-session)
+  (:export
+    :+empty-data+
+    :+http-header-accept+
+    :+http-header-content-type+
+    :create-session
+    :self
+    :session-data
+    :session-data-base
+    :session-data-capabilities
+    :session-data-host
+    :session-data-id
+    :session-data-port
+    :with-session
+    )
 
   ; utilities/util.lisp
   (:export :it)
