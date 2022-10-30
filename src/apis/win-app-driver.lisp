@@ -174,7 +174,7 @@
                        (return)))))
       (values start end))))
 
-(declaim (ftype (function (string) (values (or string null) (member t) &optional)) correct-hostname-string-p))
+;(declaim (ftype (function (string) (values (or string null) (member t) &optional)) correct-hostname-string-p))
 (defun correct-hostname-string-p (host-identifier)
 "correct-hostname-string-p
 _/_/_/ 概要 _/_/_/
@@ -191,6 +191,7 @@ t or nil,      関数の成功時はt，失敗時はnil。"
   (let
     (start end)
     (cond
+      ((string= host-identifier "") (values nil nil))
       ((setf (values start end) (ipv4-address-p host-identifier))
        (values host-identifier t))
       ((setf (values start end) (ipv6-address-p host-identifier)) ; 正確にはRFC4291ではない。
@@ -201,14 +202,9 @@ t or nil,      関数の成功時はt，失敗時はnil。"
 
 (defun correct-port-number-p (number)
   (declare (type (integer number)))
-  (and
-    (eq
-      'integer
-      (aif (type-of number)
-           (if (listp it)
-             (car it)
-             it)))
-    (<= 1 number 65535)))
+  (if (<= 1 number 65535)
+    number
+    nil))
 
 (defun get-win-app-driver-host-uri (session)
   (make-condition-if

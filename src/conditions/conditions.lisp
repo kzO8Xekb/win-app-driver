@@ -159,7 +159,6 @@
          (funcall ,signaling-func ,caller-sym)
          ,g!result))))
 
-;; このプロジェクトで使うエラーコンディションのルート
 (defmacro define-win-app-driver-condition (condition-name condition-type report-message)
   `(define-condition ,condition-name (,condition-type)
      ((log-time :initform (local-time:now)
@@ -191,37 +190,39 @@
 ;               (caller condition)
 ;               (message condition)))))
 
+;; このプロジェクトで使うコンディションのルート
 (define-win-app-driver-condition win-app-driver-error-condition   simple-error     "[~A][ERROR]@~A: ~A~%")
 (define-win-app-driver-condition win-app-driver-warning-condition simple-warning   "[~A][WARNING]@~A: ~A~%")
 (define-win-app-driver-condition win-app-driver-simple-condition  simple-condition "[~A][INFO]@~A: ~A~%")
 
-(defun expand-define-condition (args)
- `(define-condition ,(nth 0 args) (,(nth 1 args))
-    ((log-time :initform (local-time:now)                                            ; signal発報日時
-               :reader log-time)
-     (caller   :initarg :caller                                                      ; 呼び出し元関数又はマクロ関数
-               :reader  caller)
-     (message  :initform ,(nth 2 args)                                               ; ユーザーに示すメッセージ内容
-               :reader message)
-     (signal-type :initform ,(cond                                                   ; signalの種類に応じたコード生成する
-                               ((eq (second args) 'win-app-driver-error-condition)   ; エラーコンディションの場合
-                                "ERROR")
-                               ((eq (second args) 'win-app-driver-warning-condition) ; 警告コンディションの場合
-                                "WARNING")
-                               ((eq (second args) 'win-app-driver-simple-condition)  ; 一般コンディションの場合
-                                "INFOMATION"))
-                  :reader signal-type))
-    (:report (lambda (condition stream)
-               (format stream
-                       "[~A][~A]@~A: ~A~%"
-                       (log-time    condition)
-                       (signal-type condition)
-                       (caller      condition)
-                       (message     condition))))))
+(eval-when (:compile-toplevel)
+  (defun expand-define-condition (args)
+    `(define-condition ,(nth 0 args) (,(nth 1 args))
+       ((log-time :initform (local-time:now)                                            ; signal発報日時
+                  :reader log-time)
+        (caller   :initarg :caller                                                      ; 呼び出し元関数又はマクロ関数
+                  :reader  caller)
+        (message  :initform ,(nth 2 args)                                               ; ユーザーに示すメッセージ内容
+                  :reader message)
+        (signal-type :initform ,(cond                                                   ; signalの種類に応じたコード生成する
+                                  ((eq (second args) 'win-app-driver-error-condition)   ; エラーコンディションの場合
+                                   "ERROR")
+                                  ((eq (second args) 'win-app-driver-warning-condition) ; 警告コンディションの場合
+                                   "WARNING")
+                                  ((eq (second args) 'win-app-driver-simple-condition)  ; 一般コンディションの場合
+                                   "INFOMATION"))
+                     :reader signal-type))
+       (:report (lambda (condition stream)
+                  (format stream
+                          "[~A][~A]@~A: ~A~%"
+                          (log-time    condition)
+                          (signal-type condition)
+                          (caller      condition)
+                          (message     condition)))))))
 
 (defmacro define-conditions (&rest define-list)
   `(progn
-     ,@(mapcar #'win-app-driver::expand-define-condition define-list)))
+     ,@(mapcar #'expand-define-condition define-list)))
 
 (define-conditions
   (condition-incorrect-arguments        win-app-driver-error-condition "Incorrect arguments have been given to the function or macro function. Correct them with the appropriate arguments. If the error is caused by a function, (describe 'error-function-symbol) may provide useful information.")

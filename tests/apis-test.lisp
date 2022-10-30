@@ -10,106 +10,131 @@
            (win-app-driver::hostname-p "localhost")
            '(0 9)))
 
-(subtest "Testing correct-host-identifier-p"
+(subtest "Testing correct-hostname-string-p"
          (is-values
-           (win-app-driver::correct-host-identifier-p "localhost")
+           (win-app-driver::correct-hostname-string-p "localhost")
            '("localhost" t))
          (is-values
-           (win-app-driver::correct-host-identifier-p "0.0.0.0")
+           (win-app-driver::correct-hostname-string-p "0.0.0.0")
            '("0.0.0.0" t))
          (is-values
-           (win-app-driver::correct-host-identifier-p "127.0.0.1")
+           (win-app-driver::correct-hostname-string-p "127.0.0.1")
            '("127.0.0.1" t))
          (is-values
-           (win-app-driver::correct-host-identifier-p "192.168.123.45")
+           (win-app-driver::correct-hostname-string-p "192.168.123.45")
            '("192.168.123.45" t))
          (is-values
-           (win-app-driver::correct-host-identifier-p "255.255.255.255")
+           (win-app-driver::correct-hostname-string-p "255.255.255.255")
            '("255.255.255.255" t))
          (is-values
-           (win-app-driver::correct-host-identifier-p "256.255.255.255")
+           (win-app-driver::correct-hostname-string-p "256.255.255.255")
            '("256.255.255.255" t))
          (is-values
-           (win-app-driver::correct-host-identifier-p "255.256.255.255")
+           (win-app-driver::correct-hostname-string-p "255.256.255.255")
            '("255.256.255.255" t))
          (is-values
-           (win-app-driver::correct-host-identifier-p "255.255.256.255")
+           (win-app-driver::correct-hostname-string-p "255.255.256.255")
            '("255.255.256.255" t))
          (is-values
-           (win-app-driver::correct-host-identifier-p "255.255.255.256")
+           (win-app-driver::correct-hostname-string-p "255.255.255.256")
            '("255.255.255.256" t))
          (is-values
-           (win-app-driver::correct-host-identifier-p "128.128.128.128")
+           (win-app-driver::correct-hostname-string-p "128.128.128.128")
            '("128.128.128.128" t))
          (is-values
-           (win-app-driver::correct-host-identifier-p "[::1]")
+           (win-app-driver::correct-hostname-string-p "[::1]")
            '("[::1]" t)))
 
 (subtest "Testing get-win-app-driver-host-uri"
          (let
-           ((session (win-app-driver::create-session)))
+           ((session (win-app-driver::make-session-data)))
            ; check host name
-           (funcall session :pandoric-set 'win-app-driver::host "localhost")
-           (funcall session :pandoric-set 'win-app-driver::port 12345)
+           (setf (session-data-host session) "localhost")
+           (setf (win-app-driver::session-data-port session) 12345)
            (is
              (win-app-driver::get-win-app-driver-host-uri session)
              "localhost:12345")
 
-           (funcall session :pandoric-set 'win-app-driver::host "foo.bar.baz")
+           (setf (win-app-driver::session-data-host session) "foo.bar.baz")
            (is
              (win-app-driver::get-win-app-driver-host-uri session)
              "foo.bar.baz:12345")
 
            ; check IPv4 address
-           (funcall session :pandoric-set 'win-app-driver::host "127.0.0.1")
-           (funcall session :pandoric-set 'win-app-driver::port 54321)
+           (setf (win-app-driver::session-data-host session) "127.0.0.1")
+           (setf (win-app-driver::session-data-port session) 54321)
            (is
              (win-app-driver::get-win-app-driver-host-uri session)
              "127.0.0.1:54321")
 
-           (funcall session :pandoric-set 'win-app-driver::host "192.168.123.45")
+           (setf (win-app-driver::session-data-host session) "192.168.123.45")
            (is
              (win-app-driver::get-win-app-driver-host-uri session)
              "192.168.123.45:54321")
 
-           (funcall session :pandoric-set 'win-app-driver::host "292.168.123.45")
+           (setf (win-app-driver::session-data-host session) "292.168.123.45")
            (is
              (win-app-driver::get-win-app-driver-host-uri session)
              "292.168.123.45:54321")
 
            ; check IPv6
-           (funcall session :pandoric-set 'win-app-driver::host "::1")
-           (funcall session :pandoric-set 'win-app-driver::port 12345)
+           (setf (win-app-driver::session-data-host session) "::1")
+           (setf (win-app-driver::session-data-port session) 12345)
            (is-error
              (win-app-driver::get-win-app-driver-host-uri session)
              win-app-driver::condition-incorrect-hostname-string)
 
-           (funcall session :pandoric-set 'win-app-driver::host "[::1]")
-           (funcall session :pandoric-set 'win-app-driver::port 12345)
+           (setf (win-app-driver::session-data-host session) "[::1]")
+           (setf (win-app-driver::session-data-port session) 12345)
            (is
              (win-app-driver::get-win-app-driver-host-uri session)
              "[::1]:12345")
            )
 
-         (let
-           ((session (win-app-driver::create-session)))
-           (is-error
-             (win-app-driver::get-win-app-driver-host-uri session)
-             win-app-driver::condition-incorrect-hostname-string)) 
+         (is-error
+           (win-app-driver::get-win-app-driver-host-uri
+             (win-app-driver::make-session-data))
+           win-app-driver::condition-incorrect-hostname-string)
 
-         (let
-           ((session (win-app-driver::create-session)))
-           (funcall session :pandoric-set 'win-app-driver::host "127.0.0.1")
-           (is-error
-             (win-app-driver::get-win-app-driver-host-uri session)
-             win-app-driver::condition-incorrect-port-number))
+         (is-error
+           (win-app-driver::get-win-app-driver-host-uri
+             (win-app-driver::make-session-data
+               :host "127.0.0.1"))
+           win-app-driver::condition-incorrect-port-number)
 
-         (let
-           ((session (win-app-driver::create-session)))
-           (funcall session :pandoric-set 'win-app-driver::port 12345)
-           (is-error
-             (win-app-driver::get-win-app-driver-host-uri session)
-             win-app-driver::condition-incorrect-hostname-string))
+         (is-error
+           (win-app-driver::get-win-app-driver-host-uri
+             (win-app-driver::make-session-data
+               :port 12345))
+           win-app-driver::condition-incorrect-hostname-string)
+
+         (is-error
+           (win-app-driver::get-win-app-driver-host-uri
+             (win-app-driver::make-session-data
+               :host "127.0.0.1"
+               :port 0))
+           win-app-driver::condition-incorrect-port-number)
+
+         (is
+           (win-app-driver::get-win-app-driver-host-uri
+             (win-app-driver::make-session-data
+               :host "127.0.0.1"
+               :port 1))
+           "127.0.0.1:1")
+
+         (is
+           (win-app-driver::get-win-app-driver-host-uri
+             (win-app-driver::make-session-data
+               :host "127.0.0.1"
+               :port 65535))
+           "127.0.0.1:65535")
+
+         (is-error
+           (win-app-driver::get-win-app-driver-host-uri
+             (win-app-driver::make-session-data
+               :host "127.0.0.1"
+               :port 65536))
+           win-app-driver::condition-incorrect-port-number)
          )
 
 (subtest "Testing generate-desired-capabilities"
@@ -172,290 +197,55 @@
            "{\"desiredCapabilities\":{\"app\":\"Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\\\Temp\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
          )
 
-;(subtest "Test for macro expand-with-session-body"
-;         (is-expand
-;           (expand-with-session-body
-;             wds
-;             (wds
-;               :maximize-window)
-;             (wds
-;               :navigate-to
-;               url)
-;             (foo
-;               (wds
-;                 :get-element-text
-;                 (wds
-;                   :get-session-id
-;                   :xpath
-;                   "//bar"))))
-;           (progn
-;             (funcall
-;               wds
-;               :maximize-window)
-;             (funcall
-;               wds
-;               :navigate-to
-;               url)
-;             (foo
-;               (funcall
-;                 wds
-;                 :get-element-text
-;                 (funcall
-;                   wds
-;                   :get-session-id
-;                   :xpath
-;                   "//bar"))))))
-;
-;(subtest "test for macro with-session"
-;         (is-expand
-;           (with-session
-;             (wds)
-;             nil)
-;           (let
-;             ((wds (win-app-driver::create-session))
-;              ($0 (let-over-lambda:aif
-;                    nil let-over-lambda:it
-;                    "localhost"))
-;              ($1 (let-over-lambda:aif
-;                    nil let-over-lambda:it
-;                    9515)))
-;             (unwind-protect
-;               (progn
-;                 (funcall wds
-;                          :new-session
-;                          :host $0
-;                          :port $1)
-;                 (win-app-driver::expand-with-session-body
-;                   wds
-;                   nil))
-;               (progn
-;                 (funcall wds
-;                          :delete-session)))))
-;
-;         (is-expand
-;           (with-session
-;             (wds)
-;             (wds :maximize-window))
-;           (let
-;             ((wds (win-app-driver::create-session))
-;              ($0 (let-over-lambda:aif
-;                    nil let-over-lambda:it
-;                    "localhost"))
-;              ($1 (let-over-lambda:aif
-;                    nil let-over-lambda:it
-;                    9515)))
-;             (unwind-protect
-;               (progn
-;                 (funcall wds
-;                          :new-session
-;                          :host $0
-;                          :port $1)
-;                 (win-app-driver::expand-with-session-body
-;                   wds (wds :maximize-window)))
-;               (progn
-;                 (funcall wds
-;                          :delete-session)))))
-;
-;         (is-expand
-;           (with-session
-;             (wds)
-;             (wds :maximize-window)
-;             (wds :navigate-to url)
-;             (foo (wds :get-element-text (wds :get-session-id :xpath "//bar"))))
-;           (let
-;             ((wds (win-app-driver::create-session))
-;              ($0 (let-over-lambda:aif
-;                    nil let-over-lambda:it
-;                    "localhost"))
-;              ($1 (let-over-lambda:aif
-;                    nil let-over-lambda:it
-;                    9515)))
-;             (unwind-protect
-;               (progn
-;                 (funcall wds
-;                          :new-session
-;                          :host $0
-;                          :port $1)
-;                 (win-app-driver::expand-with-session-body
-;                   wds
-;                   (wds :maximize-window)
-;                   (wds :navigate-to url)
-;                   (foo (wds :get-element-text (wds :get-session-id :xpath "//bar")))))
-;               (progn
-;                 (funcall wds
-;                          :delete-session)))))
-;
-;         (is-expand
-;           (with-session
-;             (wds :port 12345 :host "127.0.0.1")
-;             (wds :maximize-window)
-;             (wds :navigate-to url)
-;             (foo (wds :get-element-text (wds :get-session-id :xpath "//bar"))))
-;           (let
-;             ((wds (win-app-driver::create-session))
-;              ($0 (let-over-lambda:aif
-;                    "127.0.0.1" let-over-lambda:it
-;                    "localhost"))
-;              ($1 (let-over-lambda:aif
-;                    12345 let-over-lambda:it
-;                    9515)))
-;             (unwind-protect
-;               (progn
-;                 (funcall wds
-;                          :new-session
-;                          :host $0
-;                          :port $1)
-;                 (win-app-driver::expand-with-session-body
-;                   wds
-;                   (wds :maximize-window)
-;                   (wds :navigate-to url)
-;                   (foo (wds :get-element-text (wds :get-session-id :xpath "//bar")))))
-;               (progn
-;                 (funcall wds
-;                          :delete-session)))))
-;
-;         (is-expand
-;           (with-session
-;             (wds :host "127.0.0.1")
-;             (wds :maximize-window)
-;             (wds :navigate-to url)
-;             (foo (wds :get-element-text (wds :get-session-id :xpath "//bar"))))
-;           (let
-;             ((wds (win-app-driver::create-session))
-;              ($0 (let-over-lambda:aif
-;                    "127.0.0.1" let-over-lambda:it
-;                    "localhost"))
-;              ($1 (let-over-lambda:aif
-;                    nil let-over-lambda:it
-;                    9515)))
-;             (unwind-protect
-;               (progn
-;                 (funcall wds
-;                          :new-session
-;                          :host $0
-;                          :port $1)
-;                 (win-app-driver::expand-with-session-body
-;                   wds
-;                   (wds :maximize-window)
-;                   (wds :navigate-to url)
-;                   (foo (wds :get-element-text (wds :get-session-id :xpath "//bar")))))
-;               (progn
-;                 (funcall wds
-;                          :delete-session)))))
-;
-;         (is-expand
-;           (with-session
-;             (wds :port 12345)
-;             (wds :maximize-window)
-;             (wds :navigate-to url)
-;             (foo (wds :get-element-text (wds :get-session-id :xpath "//bar"))))
-;           (let
-;             ((wds (win-app-driver::create-session))
-;              ($0 (let-over-lambda:aif
-;                    nil let-over-lambda:it
-;                    "localhost"))
-;              ($1 (let-over-lambda:aif
-;                    12345 let-over-lambda:it
-;                    9515)))
-;             (unwind-protect
-;               (progn
-;                 (funcall wds
-;                          :new-session
-;                          :host $0
-;                          :port $1)
-;                 (win-app-driver::expand-with-session-body
-;                   wds
-;                   (wds :maximize-window)
-;                   (wds :navigate-to url)
-;                   (foo (wds :get-element-text (wds :get-session-id :xpath "//bar")))))
-;               (progn
-;                 (funcall wds
-;                          :delete-session)))))
-;
-;         (is-expand
-;           (with-session
-;             (wds :host "127.0.0.1" :port 12345)
-;             (wds :maximize-window)
-;             (wds :navigate-to url)
-;             (foo (wds :get-element-text (wds :get-session-id :xpath "//bar"))))
-;           (let
-;             ((wds (win-app-driver::create-session))
-;              ($0 (let-over-lambda:aif
-;                    "127.0.0.1" let-over-lambda:it
-;                    "localhost"))
-;              ($1 (let-over-lambda:aif
-;                    12345 let-over-lambda:it
-;                    9515)))
-;             (unwind-protect
-;               (progn
-;                 (funcall wds
-;                          :new-session
-;                          :host $0
-;                          :port $1)
-;                 (win-app-driver::expand-with-session-body
-;                   wds
-;                   (wds :maximize-window)
-;                   (wds :navigate-to url)
-;                   (foo (wds :get-element-text (wds :get-session-id :xpath "//bar")))))
-;               (progn
-;                 (funcall wds
-;                          :delete-session)))))
-;
-;         (is-expand
-;           (with-session
-;             (wds :host "127.0.0.1"
-;                  :port 12345
-;                  :options '(:|args| ("start-maximized" "user-data-dir=/tmp/temp_profile")
-;                             :|binary| "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"))
-;             (wds :maximize-window)
-;             (wds :navigate-to url)
-;             (foo (wds :get-element-text (wds :get-session-id :xpath "//bar"))))
-;           (let
-;             ((wds (win-app-driver::create-session))
-;              ($0 (let-over-lambda:aif
-;                    "127.0.0.1" let-over-lambda:it
-;                    "localhost"))
-;              ($1 (let-over-lambda:aif
-;                    12345 let-over-lambda:it
-;                    9515))
-;              ($2 (let-over-lambda:aif
-;                    '(:|args|
-;                       ("start-maximized"
-;                        "user-data-dir=/tmp/temp_profile")
-;                       :|binary|
-;                       "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge")
-;                    let-over-lambda:it
-;                    nil)))
-;             (unwind-protect
-;               (progn
-;                 (funcall wds
-;                          :new-session
-;                          :host $0
-;                          :port $1
-;                          :options $2)
-;                 (win-app-driver::expand-with-session-body
-;                   wds
-;                   (wds :maximize-window)
-;                   (wds :navigate-to url)
-;                   (foo (wds :get-element-text (wds :get-session-id :xpath "//bar")))))
-;               (progn
-;                 (funcall wds
-;                          :delete-session)))))
-;
-;         )
+(subtest "Test for macro invoke-win-app-driver-api"
+         (is-expand
+           (win-app-driver::invoke-win-app-driver-api #'dexador:get "http://127.0.0.1:12345")
+           (let ()
+                (multiple-value-bind
+                  ($0
+                   $1
+                   $2
+                   $3)
+                  (win-app-driver::protect-for-timeout
+                    (funcall #'dexador:get
+                             "http://127.0.0.1:12345"))
+                  (values $0
+                          $1
+                          $2
+                          $3))))
 
-;(with-session
-;  (wds :host *win-app-driver-host* :port *win-app-driver-port*)
-;  (subtest "Testing get-current-url and navigate-to"
-;           (is
-;             (wds :get-current-url)
-;             "data:,")
-;
-;           (wds :navigate-to "https://hotel.testplanisphere.dev/ja/")
-;
-;           (is
-;             (wds :get-current-url)
-;             "https://hotel.testplanisphere.dev/ja/")))
+         (is-expand
+           (win-app-driver::invoke-win-app-driver-api #'dexador:post "http://127.0.0.1:12345/session/abcd-ef01-2345" :content "{\"desiredCapabilities\":{\"app\":\"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\"}}")
+           (let ()
+                (multiple-value-bind
+                  ($0
+                   $1
+                   $2
+                   $3)
+                  (win-app-driver::protect-for-timeout
+                    (funcall #'dexador:post
+                             "http://127.0.0.1:12345/session/abcd-ef01-2345"
+                             "{\"desiredCapabilities\":{\"app\":\"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\"}}"))
+                  (values $0
+                          $1
+                          $2
+                          $3))))
+
+         (is-expand
+           (win-app-driver::invoke-win-app-driver-api #'dexador:delete "http://127.0.0.1:12345/session/abcd-ef01-2345")
+           (let ()
+                (multiple-value-bind
+                  ($0
+                   $1
+                   $2
+                   $3)
+                  (win-app-driver::protect-for-timeout
+                    (funcall #'dexador:delete
+                             "http://127.0.0.1:12345/session/abcd-ef01-2345"))
+                  (values $0
+                          $1
+                          $2
+                          $3)))))
 
 (finalize)
 
