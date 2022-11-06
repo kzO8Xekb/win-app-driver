@@ -20,20 +20,28 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(defpackage win-app-driver/tests
-  (:use :cl
-        :win-app-driver
-        :prove)
-
-  (:export
-    :*win-app-driver-host*
-    :*win-app-driver-port*))
-
 (in-package :win-app-driver/tests)
 
-;; NOTE: To run this test file, execute `(asdf:test-system :win-app-driver)' in your Lisp.
+(defparameter *win-app-driver-host* "127.0.0.1")
+(defparameter *win-app-driver-port* 12345)
 
-(setf prove:*enable-colors* nil)
-
-(plan nil)
+;(lol:defmacro! with-win-app-driver-server (&body body)
+; `(flet
+;    ((,g!win-app-driver-server-terminate (,g!process-info)
+;                                         (when (uiop:process-alive-p ,g!process-info)
+;                                           (uiop:terminate-process ,g!process-info))))
+;    (let
+;      ((,g!win-app-driver-server-process-info nil))
+;      (unwind-protect
+;        (progn
+;          (setf ,g!win-app-driver-server-process-info
+;                (uiop:launch-program
+;                  (concatenate
+;                    'string
+;                    "WinAppDriver.exe "
+;                    ,*win-app-driver-host*
+;                    " "
+;                    (write-to-string ,*win-app-driver-port*))))
+;          ,@body)
+;        (,g!win-app-driver-server-terminate ,g!win-app-driver-server-process-info)))))
 

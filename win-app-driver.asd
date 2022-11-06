@@ -21,7 +21,7 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.1.0"
+           :version "0.1.1"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("cl-ppcre"
@@ -29,15 +29,17 @@
                         "jonathan"
                         "let-over-lambda"
                         "local-time"
-                        "trivial-macroexpand-all"
-                        "uiop")
+                        "trivial-macroexpand-all")
            :components ((:module "src"
                                  :components
                                  ((:file "package")
                                   (:module "apis"
                                            :depends-on ("package" "conditions" "utilities")
+                                           :serial t
                                            :components
-                                           ((:file "win-app-driver")))
+                                           ((:file "client")
+                                            (:file "apis")
+                                            (:file "main")))
                                   (:module "conditions"
                                            :depends-on ("package" "utilities")
                                            :components
@@ -49,16 +51,22 @@
            :in-order-to ((test-op (test-op "win-app-driver/tests"))))
 
 (defsystem "win-app-driver/tests"
-           :version "0.1.0"
+           :version "0.1.1"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("win-app-driver"
-                        "prove")
+                        "prove"
+                        "quri"
+                        "uiop")
            :components ((:module "tests"
+                                 :serial t
                                  :components
                                  ((:file "package")
-                                  (:file "ipv6-test")
-                                  (:file "apis-test"))))
+                                  (:file "config")
+                                  (:file "client-test")
+                                  (:file "main-test")
+                                  (:file "apis-test")
+                                  (:file "finalizer"))))
            :description "This package is WinAppDriver utilities test suite."
            :perform (test-op (op c) (symbol-call :prove :run c)))
 

@@ -37,7 +37,6 @@
     :condition-unexpected-error
     :condition-unknown-http-command-error
     :define-conditions
-;    :expand-define-condition
     :finish
     :make-condition-if
     :make-error-condition-if
@@ -52,11 +51,8 @@
     :win-app-driver-warning-condition
     )
 
-  ; apis/win-app-driver.lisp
+  ; apis/main.lisp
   (:export
-    :+empty-data+
-    :+http-header-accept+
-    :+http-header-content-type+
     :create-session
     :self
     :session-data

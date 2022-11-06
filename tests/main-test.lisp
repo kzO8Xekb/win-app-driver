@@ -22,12 +22,12 @@
 
 (in-package :win-app-driver/tests)
 
-(subtest "Testing ipv6-address-p"
-         (is-values
-           (win-app-driver::ipv6-address-p "::1")
-           '(nil nil))
-         (is-values
-           (win-app-driver::ipv6-address-p "[::1]")
-           '(0 5))
-         )
+;; NOTE: To run this test file, execute `(asdf:test-system :win-app-driver)' in your Lisp.
+
+(subtest "Testing create-session."
+         (let
+           (session)
+           (is-type
+             (setf session (win-app-driver::create-session))
+             'function)))
 

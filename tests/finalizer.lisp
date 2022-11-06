@@ -1,5 +1,6 @@
 ;;;; MIT License
 ;;;; 
+;;;; Copyright (c) 2016 Microsoft
 ;;;; Copyright (c) 2022 kzO8Xekb
 ;;;; 
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,20 +21,10 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(defpackage win-app-driver/tests
-  (:use :cl
-        :win-app-driver
-        :prove)
-
-  (:export
-    :*win-app-driver-host*
-    :*win-app-driver-port*))
-
 (in-package :win-app-driver/tests)
 
 ;; NOTE: To run this test file, execute `(asdf:test-system :win-app-driver)' in your Lisp.
 
-(setf prove:*enable-colors* nil)
 
-(plan nil)
+(finalize)
 
