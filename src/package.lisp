@@ -65,7 +65,6 @@
     :session-data-host
     :session-data-id
     :session-data-port
-    :with-session
     )
 
   ; utilities/util.lisp

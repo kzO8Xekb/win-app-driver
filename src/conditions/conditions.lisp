@@ -229,6 +229,6 @@
   (condition-incorrect-hostname-string  win-app-driver-error-condition "Incorrect hostname string. The given string does not meet the hostname specification. The hostname must be a string that conforms to RFC 952 and RFC 1123.")
   (condition-incorrect-port-number      win-app-driver-error-condition "Incorrect port number. The port number must be a natural number between 1 and 65535.")
   (condition-unexpected-error           win-app-driver-error-condition "Unexpected error.")
-  (condition-unknown-http-command-error win-app-driver-error-condition "Unknown http command error.")
+  (condition-unknown-http-method-error  win-app-driver-error-condition "Unknown http method error.")
   )
 

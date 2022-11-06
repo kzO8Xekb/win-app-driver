@@ -247,5 +247,45 @@
                           $2
                           $3)))))
 
+;(subtest "Test for macro return-win-app-driver-server-response"
+;         (is-expand
+;           (win-app-driver::return-win-app-driver-server-response
+;             (status session))
+;           (let
+;             ()
+;             (multiple-value-bind
+;               ($0 $1 $2 $3)
+;               (status session)
+;               (let
+;                 ()
+;                 (values $0 $1 $2 $3)))))
+;
+;         (is-expand
+;           (win-app-driver::return-win-app-driver-server-response
+;             (new-session session)
+;             (setf (session-data-id session) (getf (jonathan:parse json) :|sessionId|))
+;             (setf (session-data-base session)
+;                   (concatenate
+;                     'string
+;                     "/session/"
+;                     (session-data-id session)
+;                     "/")))
+;           (let
+;             ()
+;             (multiple-value-bind
+;               ($0 $1 $2 $3)
+;               (new-session session)
+;               (let
+;                 ()
+;                 (setf (session-data-id session) (getf (jonathan:parse json) :|sessionId|))
+;                 (setf (session-data-base session)
+;                       (concatenate
+;                         'string
+;                         "/session/"
+;                         (session-data-id session)
+;                         "/"))
+;                 (values $0 $1 $2 $3)))))
+;         )
+
 (finalize)
 

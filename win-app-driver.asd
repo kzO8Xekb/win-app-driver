@@ -1,5 +1,5 @@
 (defsystem "win-app-driver"
-           :version "0.0.3"
+           :version "0.1.0"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("cl-ppcre"
@@ -27,7 +27,7 @@
            :in-order-to ((test-op (test-op "win-app-driver/tests"))))
 
 (defsystem "win-app-driver/tests"
-           :version "0.0.3"
+           :version "0.1.0"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("win-app-driver"
