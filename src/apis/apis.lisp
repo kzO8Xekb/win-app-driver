@@ -22,7 +22,7 @@
 
 (in-package :win-app-driver)
 
-(defparameter +empty-data+               "{\"\": \"\"}")
+(defparameter +empty-data+ "{\"\": \"\"}")
 
 ;; Command Summary
 ;; see https://github.com/microsoft/WinAppDriver/blob/master/Docs/SupportedAPIs.md
@@ -70,58 +70,167 @@
     ((session-data-base session))))
 
 ;POST 	/session/:sessionId/appium/app/launch
+(defun launch-app (session) nil)
+
 ;POST 	/session/:sessionId/appium/app/close
+(defun close-app (session) nil)
+
 ;POST 	/session/:sessionId/back
+(defun back (session) nil)
+
 ;POST 	/session/:sessionId/buttondown
+(defun buttondown (session) nil)
+
 ;POST 	/session/:sessionId/buttonup
+(defun buttonup (session) nil)
+
 ;POST 	/session/:sessionId/click
+(defun click (session) nil)
+
 ;POST 	/session/:sessionId/doubleclick
+(defun doubleclick (session) nil)
+
 ;POST 	/session/:sessionId/element
+(defun find-element (session) nil)
+
 ;POST 	/session/:sessionId/elements
+(defun find-elements (session) nil)
+
 ;POST 	/session/:sessionId/element/active
+(defun active-element (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/attribute/:name
+(defun get-element-attribute (session) nil)
+
 ;POST 	/session/:sessionId/element/:id/clear
+(defun element-clear (session) nil)
+
 ;POST 	/session/:sessionId/element/:id/click
+(defun element-click (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/displayed
+(defun element-displayed (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/element
+(defun find-element-from-element (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/elements
+(defun find-element-from-elements (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/enabled
+(defun is-element-enabled (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/equals
+(defun element-equals (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/location
+(defun get-element-location (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/location_in_view
+(defun get-element-location-in-view (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/name
+(defun get-element-name (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/screenshot
+(defun take-element-screenshot (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/selected
+(defun is-element-selected (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/size
+(defun get-element-size (session) nil)
+
 ;GET 	/session/:sessionId/element/:id/text
+(defun get-element-text (session) nil)
+
 ;POST 	/session/:sessionId/element/:id/value
+(defun get-element-value (session) nil)
+
 ;POST 	/session/:sessionId/forward
+(defun forward (session) nil)
+
 ;POST 	/session/:sessionId/keys
+(defun send-keys (session) nil)
+
 ;GET 	/session/:sessionId/location
+(defun location (session) nil)
+
 ;POST 	/session/:sessionId/moveto
+(defun move-to (session) nil)
+
 ;GET 	/session/:sessionId/orientation
+(defun orientation (session) nil)
+
 ;GET 	/session/:sessionId/screenshot
+(defun take-screenshot (session) nil)
+
 ;GET 	/session/:sessionId/source
+(defun get-source (session) nil)
+
 ;POST 	/session/:sessionId/timeouts
+(defun set-timeouts (session) nil)
+
 ;GET 	/session/:sessionId/title
+(defun get-title (session) nil)
+
 ;POST 	/session/:sessionId/touch/click
+(defun touch-click (session) nil)
+
 ;POST 	/session/:sessionId/touch/doubleclick
+(defun touch-doubleclick (session) nil)
+
 ;POST 	/session/:sessionId/touch/down
+(defun touch-down (session) nil)
+
 ;POST 	/session/:sessionId/touch/flick
+(defun touch-flick (session) nil)
+
 ;POST 	/session/:sessionId/touch/longclick
+(defun touch-longclick (session) nil)
+
 ;POST 	/session/:sessionId/touch/move
+(defun touch-move (session) nil)
+
 ;POST 	/session/:sessionId/touch/scroll
+(defun touch-scroll (session) nil)
+
 ;POST 	/session/:sessionId/touch/up
+(defun touch-up (session) nil)
+
 ;DELETE 	/session/:sessionId/window
+(defun close-window (session) nil)
+
 ;POST 	/session/:sessionId/window
+(defun switch-to-window (session) nil)
+
 ;POST 	/session/:sessionId/window/maximize
+(defun maximize-window (session) nil)
+
 ;POST 	/session/:sessionId/window/size
+(defun get-window-size (session) nil)
+
 ;GET 	/session/:sessionId/window/size
+(defun set-window-size (session) nil)
+
 ;POST 	/session/:sessionId/window/:windowHandle/size
+(defun get-window-size-with-window-handle (session) nil)
+
 ;GET 	/session/:sessionId/window/:windowHandle/size
+(defun set-window-size-with-window-handle (session) nil)
+
 ;POST 	/session/:sessionId/window/:windowHandle/position
+(defun get-window-position-with-window-handle (session) nil)
+
 ;GET 	/session/:sessionId/window/:windowHandle/position
+(defun set-window-position-with-window-handle (session) nil)
+
 ;POST 	/session/:sessionId/window/:windowHandle/maximize
+(defun window-maximize-with-window-handle (session) nil)
+
 ;GET 	/session/:sessionId/window_handle
+(defun get-window-handle (session) nil)
+
 ;GET 	/session/:sessionId/window_handles
+(defun get-window-handles (session) nil)
 

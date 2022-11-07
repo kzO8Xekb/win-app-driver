@@ -82,88 +82,150 @@
                     (is
                       (quri:uri-path ,g!quri)
                       ,path))))
-                    ;(values .g!json ,g!code ,g!hash ,g!quri))))
+;(multiple-value-bind
+;  ($0 $1 $2 $3)
+;  (funcall notepad-session
+;           :new-session
+;           :host            *win-app-driver-host*
+;           :port            *win-app-driver-port*
+;           :app             "C:/Windows/System32/notepad.exe")
+;  (progn
+;    (like
+;      (getf (jonathan:parse $0) :|sessionId|)
+;      ;"FBF1B803-4579-44EA-B84B-AA49DC1C5344")
+;      "^[0-9A-F]{1,8}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,12}$")
+;    (is
+;      (getf (jonathan:parse $0) :|status|)
+;      0)
+;    (is
+;      (getf (getf (jonathan:parse $0) :|value|) :|app|)
+;      "C:/Windows/System32/notepad.exe")
+;    (is
+;      (getf (getf (jonathan:parse $0) :|value|) :|platformName|)
+;      "Windows")
+;    (is
+;      $1
+;      200)
+;    (is-values
+;      (gethash "server" $2)
+;      '("Microsoft-HTTPAPI/2.0" t))
+;    (is-values
+;      (gethash "content-type" $2)
+;      '("application/json" t))
+;    (is-values
+;      (gethash "content-length" $2)
+;      '("138" t))
+;    (is
+;      (quri:uri-scheme $3)
+;      "http")
+;    (is
+;      (quri:uri-host $3)
+;      *win-app-driver-host*)
+;    (is
+;      (quri:uri-port $3)
+;      *win-app-driver-port*)
+;    (is
+;      (quri:uri-path $3)
+;      "/session")
+;    (setf
+;      json $0
+;      code $1
+;      hash $2
+;      quri $3)))
 
-(subtest "Testing new-session and delete-session."
-         ; modified from Microsoft sample codes
-         ; https://github.com/microsoft/WinAppDriver/blob/master/Docs/AuthoringTestScripts.md
+; modified from Microsoft sample codes
+; https://github.com/microsoft/WinAppDriver/blob/master/Docs/AuthoringTestScripts.md
 
-         ;// Launch Notepad
-         ;DesiredCapabilities appCapabilities = new DesiredCapabilities();
-         ;appCapabilities.SetCapability("app", @"C:\Windows\System32\notepad.exe");
-         ;appCapabilities.SetCapability("appArguments", @"MyTestFile.txt");
-         ;appCapabilities.SetCapability("appWorkingDir", @"C:\MyTestFolder\");
-         ;NotepadSession = new WindowsDriver<WindowsElement>(new Uri("http://127.0.0.1:4723"), appCapabilities);
-         (let
-           ((notepad-session (win-app-driver::create-session))
-            (json "")
-            (code 0)
-            (hash nil)
-            (quri nil))
-           ; Testing new-session
-           (multiple-value-bind
-             ($0 $1 $2 $3)
-             (funcall notepad-session
-                      :new-session
-                      :host            *win-app-driver-host*
-                      :port            *win-app-driver-port*
-                      :app             "C:/Windows/System32/notepad.exe")
-             (progn
-               (like
-                 (getf (jonathan:parse $0) :|sessionId|)
-                 ;"FBF1B803-4579-44EA-B84B-AA49DC1C5344")
-                 "^[0-9A-F]{1,8}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,12}$")
-               (is
-                 (getf (jonathan:parse $0) :|status|)
-                 0)
-               (is
-                 (getf (getf (jonathan:parse $0) :|value|) :|app|)
-                 "C:/Windows/System32/notepad.exe")
-               (is
-                 (getf (getf (jonathan:parse $0) :|value|) :|platformName|)
-                 "Windows")
-               (is
-                 $1
-                 200)
-               (is-values
-                 (gethash "server" $2)
-                 '("Microsoft-HTTPAPI/2.0" t))
-               (is-values
-                 (gethash "content-type" $2)
-                 '("application/json" t))
-               (is-values
-                 (gethash "content-length" $2)
-                 '("138" t))
-               (is
-                 (quri:uri-scheme $3)
-                 "http")
-               (is
-                 (quri:uri-host $3)
-                 *win-app-driver-host*)
-               (is
-                 (quri:uri-port $3)
-                 *win-app-driver-port*)
-               (is
-                 (quri:uri-path $3)
-                 "/session")
-               (setf
-                 json $0
-                 code $1
-                 hash $2
-                 quri $3)))
+;// Launch Notepad
+;DesiredCapabilities appCapabilities = new DesiredCapabilities();
+;appCapabilities.SetCapability("app", @"C:\Windows\System32\notepad.exe");
+;appCapabilities.SetCapability("appArguments", @"MyTestFile.txt");
+;appCapabilities.SetCapability("appWorkingDir", @"C:\MyTestFolder\");
+;NotepadSession = new WindowsDriver<WindowsElement>(new Uri("http://127.0.0.1:4723"), appCapabilities);
+(let
+  ((notepad-session (win-app-driver::create-session))
+   base)
+  (subtest "Testing new-session."
+           (test-api
+             (funcall
+               notepad-session
+               :new-session
+               :host           *win-app-driver-host*
+               :port           *win-app-driver-port*
+               :app            "C:/Windows/System32/notepad.exe")
+             :app            "C:/Windows/System32/notepad.exe"
+             :path           "/session"
+             :content-length "138")
 
-           ; Testing delete-session.
+           (setf base (win-app-driver::session-data-base
+                                 (funcall
+                                   notepad-session
+                                   :pandoric-get
+                                   'win-app-driver::session)))
+
+           ; initialized session-data check.
+           (like
+             (win-app-driver::session-data-id
+                              (funcall
+                                notepad-session
+                                :pandoric-get
+                                'win-app-driver::session))
+             (concatenate
+               'string
+               "^" *session-id-regex* "$"))
+           (is
+             (win-app-driver::session-data-capabilities
+               (funcall
+                 notepad-session
+                 :pandoric-get
+                 'win-app-driver::session))
+             "{\"desiredCapabilities\":{\"app\":\"C:/Windows/System32/notepad.exe\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\"}}")
+           (is
+             (win-app-driver::session-data-host
+               (funcall
+                 notepad-session
+                 :pandoric-get
+                 'win-app-driver::session))
+             *win-app-driver-host*)
+           (is
+             (win-app-driver::session-data-port
+               (funcall
+                 notepad-session
+                 :pandoric-get
+                 'win-app-driver::session))
+             *win-app-driver-port*)
+           (like
+             (win-app-driver::session-data-base
+               (funcall
+                 notepad-session
+                 :pandoric-get
+                 'win-app-driver::session))
+             (concatenate
+               'string
+               "^/session/" *session-id-regex* "/$"))
+           (is
+             (win-app-driver::session-data-base
+               (funcall
+                 notepad-session
+                 :pandoric-get
+                 'win-app-driver::session))
+             (concatenate
+               'string
+               "/session/"
+               (win-app-driver::session-data-id
+                 (funcall
+                   notepad-session
+                   :pandoric-get
+                   'win-app-driver::session))
+               "/")))
+
+  (subtest "Testing delete-session."
            (test-api
              (funcall notepad-session :delete-session)
              :session-id     nil
              :app            nil
              :platform-name  nil
              :content-length "12"
-             :path           (concatenate
-                               'string
-                               "/session/"
-                               (getf (jonathan:parse json) :|sessionId|)
-                               "/")))
-           )
-
+             :path           base))
+  )
 
