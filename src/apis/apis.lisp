@@ -31,6 +31,7 @@
 
 ; Status
 ; GET /status
+; WinAppDriver Serverのステータスを取得する。
 (defun status (session)
   (send-command
     session
@@ -51,9 +52,6 @@
 ; Get Sessions
 ; HTTP Method: GET
 ; URI Template: /sessions
-; 一応の実装。
-; 原則として，クロージャから呼び出さない。
-; セッションとクロージャーは1対1に対応させた方が良いと思ったため。
 (defun get-sessions (session)
   (send-command
     session
@@ -70,10 +68,18 @@
     ((session-data-base session))))
 
 ;POST 	/session/:sessionId/appium/app/launch
-(defun launch-app (session) nil)
+(defun launch-app (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/appium/app/launch")))
 
 ;POST 	/session/:sessionId/appium/app/close
-(defun close-app (session) nil)
+(defun close-app (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/appium/app/close")))
 
 ;POST 	/session/:sessionId/back
 (defun back (session) nil)

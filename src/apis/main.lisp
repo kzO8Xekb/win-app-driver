@@ -115,7 +115,8 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                                          "/session/"
                                          (session-data-id session)
                                          "/"))))
-                 (:sessions () (return-win-app-driver-server-response (sessions session)))
+                 (:get-sessions () (return-win-app-driver-server-response
+                                 (get-sessions session)))
                  (:delete-session ()
                                   (cond
                                     (session
