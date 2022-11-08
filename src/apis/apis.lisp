@@ -82,28 +82,60 @@
     ((session-data-base session) "/appium/app/close")))
 
 ;POST 	/session/:sessionId/back
-(defun back (session) nil)
+(defun back (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/back")))
 
 ;POST 	/session/:sessionId/buttondown
-(defun buttondown (session) nil)
+(defun button-down (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/buttondown")))
 
 ;POST 	/session/:sessionId/buttonup
-(defun buttonup (session) nil)
+(defun button-up (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/buttonup")))
 
 ;POST 	/session/:sessionId/click
-(defun click (session) nil)
+(defun click (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/click")))
 
 ;POST 	/session/:sessionId/doubleclick
-(defun doubleclick (session) nil)
+(defun doubleclick (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/doubleclick")))
 
 ;POST 	/session/:sessionId/element
-(defun find-element (session) nil)
+(defun find-element (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/element")))
 
 ;POST 	/session/:sessionId/elements
-(defun find-elements (session) nil)
+(defun find-elements (session) 
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/elements")))
 
 ;POST 	/session/:sessionId/element/active
-(defun active-element (session) nil)
+(defun active-element (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/element/active")))
 
 ;GET 	/session/:sessionId/element/:id/attribute/:name
 (defun get-element-attribute (session) nil)
