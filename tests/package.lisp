@@ -27,7 +27,8 @@
 
   (:export
     :*win-app-driver-host*
-    :*win-app-driver-port*))
+    :*win-app-driver-port*
+    :*session-id-regex*))
 
 (in-package :win-app-driver/tests)
 
