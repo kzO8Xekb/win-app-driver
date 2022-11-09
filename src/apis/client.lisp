@@ -235,7 +235,8 @@ t or nil,      関数の成功時はt，失敗時はnil。"
       ,(get-win-app-driver-host-uri session)
       ,@directories)))
 
-(defmacro send-command (session method-type endpoint &optional (content nil))
+;(defmacro send-command (session method-type endpoint &optional (content nil))
+(defmacro send-command (session method-type endpoint &optional (content "{\"\": \"\"}"))
   (cond
     ((eq method-type :get)
      `(progn

@@ -48,18 +48,18 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     `(:|desiredCapabilities|
        (,@(aif app
                `(:|app| ,it))
-         ,@(aif app-arguments
-                `(:|appArguments| ,it))
-         ,@(aif app-top-level-window
-                `(:|appTopLevelWindow| ,it))
-         ,@(aif app-working-dir
-                `(:|appWorkingDir| ,it))
-         ,@(aif device-name
-                `(:|deviceName| ,it))
-         ,@(aif platform-name
-                `(:|platformName| ,it))
-         ,@(aif platform-version
-                `(:|platformVersion| ,it)))))))
+        ,@(aif app-arguments
+               `(:|appArguments| ,it))
+        ,@(aif app-top-level-window
+               `(:|appTopLevelWindow| ,it))
+        ,@(aif app-working-dir
+               `(:|appWorkingDir| ,it))
+        ,@(aif device-name
+               `(:|deviceName| ,it))
+        ,@(aif platform-name
+               `(:|platformName| ,it))
+        ,@(aif platform-version
+               `(:|platformVersion| ,it)))))))
 
 ;(lol:defmacro! return-win-app-driver-server-response (expr &body body)
 ; `(multiple-value-bind
@@ -150,69 +150,72 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:double-click () 
                                 (return-win-app-driver-server-response 
                                   (double-click session)))
-                 (:find-element () 
+                 (:find-element (selector value) 
                                 (return-win-app-driver-server-response 
-                                  (find-element session)))
-                 (:find-elements () 
+                                  (find-element session selector value)))
+                 (:find-elements (selector value) 
                                  (return-win-app-driver-server-response 
-                                   (find-elements session)))
+                                   (find-elements session selector value)))
                  (:active-element () 
                                   (return-win-app-driver-server-response 
                                     (active-element session)))
-                 (:get-element-attribute () 
+                 (:get-element-attribute (element-id attribute-name) 
                                          (return-win-app-driver-server-response 
-                                           (get-element-attribute session)))
-                 (:element-clear () 
+                                           (get-element-attribute session element-id attribute-name)))
+                 (:element-clear (element-id) 
                                  (return-win-app-driver-server-response 
-                                   (element-clear session)))
-                 (:element-click () 
+                                   (element-clear session element-id)))
+                 (:element-click (element-id) 
                                  (return-win-app-driver-server-response 
-                                   (element-click session)))
-                 (:element-displayed () 
+                                   (element-click session element-id)))
+                 (:element-displayed (element-id) 
                                      (return-win-app-driver-server-response 
-                                       (element-displayed session)))
-                 (:find-element-from-element () 
+                                       (element-displayed session element-id)))
+                 (:find-element-from-element (element-id selector value) 
                                              (return-win-app-driver-server-response 
-                                               (find-element-from-element session)))
-                 (:find-element-from-elements () 
+                                               (find-element-from-element session element-id selector value)))
+                 (:find-element-from-elements (element-id selector value) 
                                               (return-win-app-driver-server-response 
-                                                (find-element-from-elements session)))
-                 (:is-element-enabled () 
+                                                (find-element-from-elements session element-id selector value)))
+                 (:is-element-enabled (element-id) 
                                       (return-win-app-driver-server-response 
-                                        (is-element-enabled session)))
-                 (:element-equals () 
+                                        (is-element-enabled session element-id)))
+                 (:element-equals (element-id) 
                                   (return-win-app-driver-server-response 
-                                    (element-equals session)))
-                 (:get-element-location () 
+                                    (element-equals session element-id)))
+                 (:get-element-location (element-id) 
                                         (return-win-app-driver-server-response 
-                                          (get-element-location session)))
-                 (:get-element-location-in-view () 
+                                          (get-element-location session element-id)))
+                 (:get-element-location-in-view (element-id) 
                                                 (return-win-app-driver-server-response 
-                                                  (get-element-location-in-view session)))
-                 (:get-element-name () 
+                                                  (get-element-location-in-view session element-id)))
+                 (:get-element-name (element-id) 
                                     (return-win-app-driver-server-response 
-                                      (get-element-name session)))
-                 (:take-element-screenshot () 
+                                      (get-element-name session element-id)))
+                 (:take-element-screenshot (element-id) 
                                            (return-win-app-driver-server-response 
-                                             (take-element-screenshot session)))
-                 (:is-element-selected () 
+                                             (take-element-screenshot session element-id)))
+                 (:is-element-selected (element-id) 
                                        (return-win-app-driver-server-response 
-                                         (is-element-selected session)))
-                 (:get-element-size () 
+                                         (is-element-selected session element-id)))
+                 (:get-element-size (element-id) 
                                     (return-win-app-driver-server-response 
-                                      (get-element-size session)))
-                 (:get-element-text () 
+                                      (get-element-size session element-id)))
+                 (:get-element-text (element-id) 
                                     (return-win-app-driver-server-response 
-                                      (get-element-text session)))
-                 (:get-element-value () 
+                                      (get-element-text session element-id)))
+                 (:get-element-value (element-id) 
                                      (return-win-app-driver-server-response 
-                                       (get-element-value session)))
+                                       (get-element-value session element-id)))
                  (:forward () 
                            (return-win-app-driver-server-response 
                              (forward session)))
-                 (:send-keys () 
+                 (:send-keys (keys) ; 形だけの実装
                              (return-win-app-driver-server-response 
-                               (send-keys session)))
+                               (send-keys session keys)))
+                 (:send-string (string) ; 仕様外関数
+                             (return-win-app-driver-server-response 
+                               (send-string session string)))
                  (:location () 
                             (return-win-app-driver-server-response 
                               (location session)))
@@ -273,25 +276,25 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:set-window-size () 
                                    (return-win-app-driver-server-response 
                                      (set-window-size session)))
-                 (:get-window-size-with-window-handle () 
+                 (:get-window-size-with-window-handle (window-handle) 
                                                       (return-win-app-driver-server-response 
-                                                        (get-window-size-with-window-handle session)))
-                 (:set-window-size-with-window-handle () 
+                                                        (get-window-size-with-window-handle session window-handle)))
+                 (:set-window-size-with-window-handle (window-handle) 
                                                       (return-win-app-driver-server-response 
-                                                        (set-window-size-with-window-handle session)))
-                 (:get-window-position-with-window-handle () 
+                                                        (set-window-size-with-window-handle session window-handle)))
+                 (:get-window-position-with-window-handle (window-handle) 
                                                           (return-win-app-driver-server-response 
-                                                            (get-window-position-with-window-handle session)))
-                 (:set-window-position-with-window-handle () 
+                                                            (get-window-position-with-window-handle session window-handle)))
+                 (:set-window-position-with-window-handle (window-handle) 
                                                           (return-win-app-driver-server-response 
-                                                            (set-window-position-with-window-handle session)))
-                 (:window-maximize-with-window-handle () 
+                                                            (set-window-position-with-window-handle session window-handle)))
+                 (:window-maximize-with-window-handle (window-handle)
                                                       (return-win-app-driver-server-response 
-                                                        (window-maximize-with-window-handle session)))
-                 (:get-window-handle () 
+                                                        (window-maximize-with-window-handle session window-handle)))
+                 (:get-window-handle ()  ; ToDo 形だけの実装
                                      (return-win-app-driver-server-response 
                                        (get-window-handle session)))
-                 (:get-window-handles ()
+                 (:get-window-handles () ; ToDo 形だけの実装
                                       (return-win-app-driver-server-response
                                         (get-window-handles session))))
           self (lambda (&rest args)
