@@ -48,7 +48,7 @@
                     (when ,session-id
                       (like
                         (getf (jonathan:parse ,g!json) :|sessionId|)
-                        (concatenate 'string "^" ,*session-id-regex* "$")))
+                        (concatenate 'string "^" win-app-driver/tests::*session-id-regex* "$")))
                     (is
                       (getf (jonathan:parse ,g!json) :|status|)
                       ,status)
