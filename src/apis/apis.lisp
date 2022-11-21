@@ -256,16 +256,6 @@
     :post
     ((session-data-base session) "/forward")))
 
-;POST 	/session/:sessionId/keys
-(defun send-keys(session keys)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/keys")))
-
-(defun send-string(session string)
-  (send-keys session keys))
-
 ;GET 	/session/:sessionId/location
 (defun location(session)
   (send-command
