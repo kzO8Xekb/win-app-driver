@@ -32,7 +32,7 @@
                                    (platform-version nil))
   "make-desired-capabilities
 _/_/_/ 概要 _/_/_/
-WinAppDriverとのsessionを確立するために必要なdesired capabilitiesを作成します。
+WinAppDriver serverとのsessionを確立するために必要なdesired capabilitiesを作成します。
 
 _/_/_/ 引数 _/_/_/
 app,                  [key]app:               Application identifier or executable full path. ex. Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge
@@ -72,14 +72,14 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
 (defun create-session ()
   (macrolet
     ((return-win-app-driver-server-response (expr &body body)
-       (with-gensyms
-         ($json $status-code $hash $quri)
-         `(multiple-value-bind
-            ($json $status-code $hash $quri)
-            ,expr
-            (let ()
-              ,@body
-              (values $json $status-code $hash $quri))))))
+                                            (with-gensyms
+                                              ($json $status-code $hash $quri)
+                                              `(multiple-value-bind
+                                                 ($json $status-code $hash $quri)
+                                                 ,expr
+                                                 (let ()
+                                                   ,@body
+                                                   (values $json $status-code $hash $quri))))))
     (lol:pandoriclet
       ((session nil))
       (let
@@ -214,8 +214,8 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                              (return-win-app-driver-server-response 
                                (send-keys session keys)))
                  (:send-string (string) ; 仕様外関数
-                             (return-win-app-driver-server-response 
-                               (send-string session string)))
+                               (return-win-app-driver-server-response 
+                                 (send-string session string)))
                  (:location () 
                             (return-win-app-driver-server-response 
                               (location session)))

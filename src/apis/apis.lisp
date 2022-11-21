@@ -263,7 +263,7 @@
     :post
     ((session-data-base session) "/keys")))
 
-(defun send-keys(session string)
+(defun send-string(session string)
   (send-keys session keys))
 
 ;GET 	/session/:sessionId/location

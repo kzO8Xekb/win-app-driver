@@ -21,7 +21,7 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.1.5"
+           :version "0.1.6"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("cl-ppcre"
@@ -39,6 +39,7 @@
                                            :components
                                            ((:file "client")
                                             (:file "apis")
+                                            (:file "keys")
                                             (:file "main")))
                                   (:module "conditions"
                                            :depends-on ("package" "utilities")
@@ -51,7 +52,7 @@
            :in-order-to ((test-op (test-op "win-app-driver/tests"))))
 
 (defsystem "win-app-driver/tests"
-           :version "0.1.5"
+           :version "0.1.6"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("win-app-driver"
