@@ -27,7 +27,7 @@ In particular, functions that require the use of "Appium" should not work at all
 ## Usage
 1. Download and install WinAppDriver from the [official website](https://github.com/microsoft/WinAppDriver).
 1. Start WinAppDriver Server.
-1. Extract the complete set of win-app-driver files to your quicklisp/local-projects folder.
+1. Extract the complete set of win-app-driver files to your quicklisp/local-projects/win-app-driver folder.
 1. Start SBCL.
 1. Perform as follows.
 ```common-lisp
