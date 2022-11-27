@@ -1,6 +1,13 @@
 # win-app-driver
 
+Windows Application Driver (WinAppDriver) is a service to support Selenium-like UI Test Automation on Windows Applications. This package allows WinAppDriver to be used with Common Lisp.
+
 ## Usage
+1. Download and install WinAppDriver from the official website.
+1. Start WinAppDriver Server.
+1. Extract the complete set of win-app-driver files to your quicklisp/local-projects folder.
+1. Start SBCL.
+1. Perform as follows.
 ``` Common Lisp
 (ql:quickload :win-app-driver)
 
@@ -47,6 +54,8 @@
 ```
 ## Installation
 
+Extract the complete set of win-app-driver files to your quicklisp/local-projects folder.
+
 ## Author
 
 * kzO8Xekb
@@ -54,3 +63,4 @@
 ## Copyright
 
 Copyright (c) 2022 kzO8Xekb
+
