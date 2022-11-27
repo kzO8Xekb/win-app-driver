@@ -22,7 +22,7 @@ In particular, functions that require the use of "Appium" should not work at all
 
 ### Tools to assist with element id research.
 1. [Accessibility Insights for Windows](https://accessibilityinsights.io/)
-1. [WinAppDriver UI Recorder Tool](https://github.com/microsoft/WinAppDriver/tree/master/Tools/UIRecorder) Supplementary tools for WinAppDriver.
+1. [WinAppDriver UI Recorder Tool](https://github.com/microsoft/WinAppDriver/tree/master/Tools/UIRecorder) (Supplementary tools for WinAppDriver)
 
 ## Usage
 1. Download and install WinAppDriver from the [official website](https://github.com/microsoft/WinAppDriver).
