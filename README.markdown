@@ -90,8 +90,6 @@ In particular, functions that require the use of "Appium" should not work at all
 
 Extract the complete set of win-app-driver files to your quicklisp/local-projects/win-app-driver folder.
 
-## Tips
-
 ## Author
 
 * kzO8Xekb
