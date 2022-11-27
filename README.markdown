@@ -8,7 +8,7 @@ Windows Application Driver (WinAppDriver) is a service to support Selenium-like 
 1. Extract the complete set of win-app-driver files to your quicklisp/local-projects folder.
 1. Start SBCL.
 1. Perform as follows.
-```Common Lisp
+```common-lisp
 (ql:quickload :win-app-driver)
 
 (setf (symbol-function 'notepad-session) (win-app-driver::create-session))
