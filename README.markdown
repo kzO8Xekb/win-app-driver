@@ -9,13 +9,20 @@ In particular, functions that require the use of "Appium" should not work at all
 ## Requirements
 
 1. Windows 10 PC with the latest Windows 10 version (Version 1607 or later)
+1. [WinAppDriver](https://github.com/microsoft/WinAppDriver).
 1. [Steel Bank Common Lisp(SBCL) 2.2.4 for Windows](https://www.sbcl.org/)
+
+### Common Lisp packages
 1. cl-ppcre
 1. dexador
 1. jonathan
 1. let-over-lambda
 1. local-time
 1. trivial-macroexpand-all
+
+### Tools to assist with element id research.
+1. [Accessibility Insights for Windows](https://accessibilityinsights.io/)
+1. [WinAppDriver UI Recorder Tool](https://github.com/microsoft/WinAppDriver/tree/master/Tools/UIRecorder) Supplementary tools for WinAppDriver.
 
 ## Usage
 1. Download and install WinAppDriver from the [official website](https://github.com/microsoft/WinAppDriver).
@@ -82,6 +89,8 @@ In particular, functions that require the use of "Appium" should not work at all
 ## Installation
 
 Extract the complete set of win-app-driver files to your quicklisp/local-projects folder.
+
+## Tips
 
 ## Author
 
