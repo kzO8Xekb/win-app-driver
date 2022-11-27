@@ -100,7 +100,7 @@
       (concatenate 'string result "]"))))
 
 ;POST 	/session/:sessionId/keys
-(defun send-keys(session keys)
+(defun send-keys (session keys)
   (let
     ((val (concatenate
             'string
@@ -113,6 +113,6 @@
       ((session-data-base session) "/keys")
       val)))
 
-(defun send-string(session string)
-  (element-send-keys session (concatenate 'list string)))
+(defun send-string (session string)
+  (send-keys session (concatenate 'list string)))
 
