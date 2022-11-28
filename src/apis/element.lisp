@@ -67,18 +67,25 @@
 
   _/_/_/ 引数 _/_/_/
   selector, symbol: element位置の特定方法を，シンボルで指定します。
-                     symbol             Matched Attribute
-                     :accessibility-id  AutomationId
-                     :class-name        ClassName
-                     :name              Name
-                     :xpath             XPath String
+  symbol             Matched Attribute
+  :accessibility-id  AutomationId
+  :class-name        ClassName
+  :name              Name
+  :xpath             XPath String
   value,    string: 検索するelementを特定するための文字列を指定します。Accessibility Insights for WindowsやUI Recordersで調査した値を指定します。
 
   _/_/_/ 返り値 _/_/_/
   string: WinAppDriver Serverに送信するJSONフォーマットの文字列。"
-  (generate-element-string
+  (multiple-value-bind
+    (using success)
     (locator-strategies selector)
-    value))
+    (make-error-condition-if
+      (complement (lambda () success))
+      'condition-incorrect-arguments
+      'generate-find-element-json-string)
+    (generate-element-string
+      using
+      value)))
 
 ;POST 	/session/:sessionId/element
 (defun find-element (session selector value)

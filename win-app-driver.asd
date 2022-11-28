@@ -69,6 +69,8 @@
                                   (:file "client-test")
                                   (:file "main-test")
                                   (:file "apis-test")
+                                  (:file "api-element-test")
+                                  (:file "api-keys-test")
                                   (:file "finalizer"))))
            :description "This package is WinAppDriver utilities test suite."
            :perform (test-op (op c) (symbol-call :prove :run c)))
