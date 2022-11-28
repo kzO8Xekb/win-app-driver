@@ -2,14 +2,14 @@
 
 [Windows Application Driver (WinAppDriver)](https://github.com/microsoft/WinAppDriver) is a service to support Selenium-like UI Test Automation on Windows Applications. This package allows WinAppDriver to be used with Common Lisp.
 
-This is a prototype. It has not been fully tested. Please note that not all functions may work properly.
+This program is a study. I don't know if it works well. It has not been fully tested. Please note that not all functions may work properly.
 
 In particular, functions that require the use of "Appium" should not work at all.
 
 ## Requirements
 
 1. Windows 10 PC with the latest Windows 10 version (Version 1607 or later)
-1. [WinAppDriver](https://github.com/microsoft/WinAppDriver).
+1. [WinAppDriver](https://github.com/microsoft/WinAppDriver)
 1. [Steel Bank Common Lisp(SBCL) 2.2.4 for Windows](https://www.sbcl.org/)
 
 ### Common Lisp packages
@@ -38,9 +38,9 @@ In particular, functions that require the use of "Appium" should not work at all
 
 (notepad-session
   :new-session
-  :host "localhost"                       ; optional default "localhost".
-  :port 12345                             ; optional default 4723.
-  :app "C:/Windows/System32/notepad.exe") ; "\" does not work. Please change to "/".
+  :host "localhost"                        ; optional default "localhost".
+  :port 12345                              ; optional default 4723.
+  :app  "C:/Windows/System32/notepad.exe") ; "\" does not work. Please change to "/".
 ;"{\"sessionId\":\"CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56\",\"status\":0,\"value\":{\"app\":\"C:/Windows/System32/notepad.exe\",\"platformName\":\"Windows\"}}"
 ;200
 ;#<HASH-TABLE :TEST EQUAL :COUNT 4 {10025C42D3}>
