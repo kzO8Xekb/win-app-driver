@@ -90,13 +90,13 @@
       ((null itr) `(,@result)))))
 
 ;; Utilities for Jonathan Object
+(declaim (inline response-accessor))
+(defun response-accessor (response key)
+  (getf (jonathan:parse response) key))
+
 (declaim (inline get-value))
 (defun get-value (response)
-  (getf response :|value|))
-
-(declaim (inline value-accessor))
-(defun value-accessor (value key)
-  (getf (get-value value) key))
+  (response-accessor response :|value|))
 
 (defun expand-pargs (list)
   (mapcar

@@ -2,9 +2,10 @@
 
 [Windows Application Driver (WinAppDriver)](https://github.com/microsoft/WinAppDriver) is a service to support Selenium-like UI Test Automation on Windows Applications. This package allows WinAppDriver to be used with Common Lisp.
 
-This program is a study. I don't know if it works well. It has not been fully tested. Please note that not all functions may work properly.
-
+As this program is a prototype, there may be inconvenient features or bugs.
 In particular, functions that require the use of "Appium" should not work at all.
+
+Thank you very much.
 
 ## Requirements
 
@@ -13,6 +14,7 @@ In particular, functions that require the use of "Appium" should not work at all
 1. [Steel Bank Common Lisp(SBCL) 2.2.4 for Windows](https://www.sbcl.org/)
 
 ### Common Lisp packages
+1. alexandria
 1. cl-ppcre
 1. dexador
 1. jonathan
@@ -89,6 +91,10 @@ In particular, functions that require the use of "Appium" should not work at all
 ## Installation
 
 Extract the complete set of win-app-driver files to your quicklisp/local-projects/win-app-driver folder.
+
+## License
+
+[MIT License](http://www.opensource.org/licenses/mit-license)
 
 ## Author
 

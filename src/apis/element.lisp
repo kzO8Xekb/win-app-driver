@@ -22,25 +22,17 @@
 
 (in-package :win-app-driver)
 
-(defun generate-locator-strategies-table ()
-  "locatorに応じたJSONで使用する文字列を返すハッシュ表を生成します。"
-  (let
-    ((table (make-hash-table
-              :test #'eq)))
-    (setf                                                      ; ハッシュテーブルの初期化
-      (gethash :accessibility-id-selector table) "accessibility id"
-      (gethash :accessibility-id          table) "accessibility id"
-      (gethash :automation-id-selector    table) "accessibility id"
-      (gethash :automation-id             table) "accessibility id"
-      (gethash :class-name-selector       table) "class name"
-      (gethash :class-name                table) "class name"
-      (gethash :name-selector             table) "name"
-      (gethash :name                      table) "name"
-      (gethash :xpath-selector            table) "xpath"
-      (gethash :xpath                     table) "xpath")
-    table))
-
-(defparameter *locator-strategies-table* (generate-locator-strategies-table))
+(defparameter *locator-strategies-table* (alexandria:plist-hash-table
+                                           `(:accessibility-id-selector "accessibility id"
+                                             :accessibility-id          "accessibility id"
+                                             :automation-id-selector    "accessibility id"
+                                             :automation-id             "accessibility id"
+                                             :class-name-selector       "class name"      
+                                             :class-name                "class name"      
+                                             :name-selector             "name"            
+                                             :name                      "name"            
+                                             :xpath-selector            "xpath"           
+                                             :xpath                     "xpath"           )))
 
 (declaim (inline locator-strategies))
 (defun locator-strategies (selector)
@@ -86,6 +78,9 @@
     (generate-element-string
       using
       value)))
+
+(defun get-element-id (response)
+  (getf (response-accessor response :|value|) :ELEMENT))
 
 ;POST 	/session/:sessionId/element
 (defun find-element (session selector value)

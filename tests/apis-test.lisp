@@ -219,6 +219,56 @@
                    'win-app-driver::session))
                "/")))
 
+  (subtest "Testing find-element."
+           (test-api
+             (funcall
+               notepad-session
+               :find-element
+               :name "Text editor")
+             :app            nil
+             :platform-name  nil
+             :content-length "96"
+             :path           (concatenate
+                               'string
+                               base
+                               "/element")))
+  (let*
+    ((response (funcall
+                 notepad-session
+                 :find-element
+                 :name "Text editor"))
+     (element-id (get-element-id response)))
+    (subtest "Testing click-element."
+             (test-api
+               (funcall
+                 notepad-session
+                 :element-click
+                 element-id)
+               :app            nil
+               :platform-name  nil
+               :content-length "63"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/click")))
+
+    (subtest "Testing send-string."
+             (test-api
+               (funcall
+                 notepad-session
+                 :send-string
+                 "Hello, World!"
+                 :enter)
+               :app            nil
+               :platform-name  nil
+               :content-length "63"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/keys"))))
+
   (subtest "Testing delete-session."
            (test-api
              (funcall notepad-session :delete-session)

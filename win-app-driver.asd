@@ -21,10 +21,11 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.1.7"
+           :version "0.1.9"
            :author "kzO8Xekb"
            :license "MIT"
-           :depends-on ("cl-ppcre"
+           :depends-on ("alexandria"
+                        "cl-ppcre"
                         "dexador"
                         "jonathan"
                         "let-over-lambda"
@@ -54,7 +55,7 @@
            :in-order-to ((test-op (test-op "win-app-driver/tests"))))
 
 (defsystem "win-app-driver/tests"
-           :version "0.1.7"
+           :version "0.1.9"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("win-app-driver"
@@ -68,9 +69,9 @@
                                   (:file "config")
                                   (:file "client-test")
                                   (:file "main-test")
-                                  (:file "apis-test")
                                   (:file "api-element-test")
                                   (:file "api-keys-test")
+                                  (:file "apis-test")
                                   (:file "finalizer"))))
            :description "This package is WinAppDriver utilities test suite."
            :perform (test-op (op c) (symbol-call :prove :run c)))

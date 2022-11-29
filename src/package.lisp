@@ -63,7 +63,13 @@
     :session-data-port
     )
 
+  ; apis/element.lisp
+  (:export
+    :get-element-id)
+
   ; utilities/util.lisp
-  (:export :it)
+  (:export
+    :it
+    :value-accessor)
   )
 
