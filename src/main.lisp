@@ -117,8 +117,7 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                                        (concatenate
                                          'string
                                          "/session/"
-                                         (session-data-id session)
-                                         "/"))))
+                                         (session-data-id session)))))
                  (:get-sessions ()
                                 (return-win-app-driver-server-response
                                   (get-sessions session)))

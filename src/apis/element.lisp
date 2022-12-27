@@ -87,7 +87,7 @@
   (send-command
     session
     :post
-    ((session-data-base session) "element")
+    ((session-data-base session) "/element")
     (generate-find-element-json-string
       selector
       value)))
@@ -97,7 +97,7 @@
   (send-command
     session
     :post
-    ((session-data-base session) "elements")
+    ((session-data-base session) "/elements")
     (generate-find-element-json-string
       selector
       value)))
@@ -107,42 +107,42 @@
   (send-command
     session
     :post
-    ((session-data-base session) "element/active")))
+    ((session-data-base session) "/element/active")))
 
 ;GET 	/session/:sessionId/element/:id/attribute/:name
 (defun get-element-attribute (session element-id attribute-name)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/attribute/" attribute-name)))
+    ((session-data-base session) "/element/" element-id "/attribute/" attribute-name)))
 
 ;POST 	/session/:sessionId/element/:id/clear
 (defun element-clear (session element-id)
   (send-command
     session
     :post
-    ((session-data-base session) "element/" element-id "/clear")))
+    ((session-data-base session) "/element/" element-id "/clear")))
 
 ;POST 	/session/:sessionId/element/:id/click
 (defun element-click (session element-id)
   (send-command
     session
     :post
-    ((session-data-base session) "element/" element-id "/click")))
+    ((session-data-base session) "/element/" element-id "/click")))
 
 ;GET 	/session/:sessionId/element/:id/displayed
 (defun is-element-displayed (session element-id)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/displayed")))
+    ((session-data-base session) "/element/" element-id "/displayed")))
 
 ;GET 	/session/:sessionId/element/:id/element
 (defun find-element-from-element (session element-id selector value)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/element")
+    ((session-data-base session) "/element/" element-id "/element")
     (generate-find-element-json-string
       selector
       value)))
@@ -152,7 +152,7 @@
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/elements")
+    ((session-data-base session) "/element/" element-id "/elements")
     (generate-find-element-json-string
       selector
       value)))
@@ -162,68 +162,68 @@
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/enabled")))
+    ((session-data-base session) "/element/" element-id "/enabled")))
 
 ;GET 	/session/:sessionId/element/:id/equals
 (defun element-equals (session element-id)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/equals")))
+    ((session-data-base session) "/element/" element-id "/equals")))
 
 ;GET 	/session/:sessionId/element/:id/location
 (defun get-element-location (session element-id)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/location")))
+    ((session-data-base session) "/element/" element-id "/location")))
 
 ;GET 	/session/:sessionId/element/:id/location_in_view
 (defun get-element-location-in-view (session element-id)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/location_in_view")))
+    ((session-data-base session) "/element/" element-id "/location_in_view")))
 
 ;GET 	/session/:sessionId/element/:id/name
 (defun get-element-name (session element-id)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/name")))
+    ((session-data-base session) "/element/" element-id "/name")))
 
 ;GET 	/session/:sessionId/element/:id/screenshot
 (defun take-element-screenshot (session element-id)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/screenshot")))
+    ((session-data-base session) "/element/" element-id "/screenshot")))
 
 ;GET 	/session/:sessionId/element/:id/selected
 (defun is-element-selected (session element-id)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/selected")))
+    ((session-data-base session) "/element/" element-id "/selected")))
 
 ;GET 	/session/:sessionId/element/:id/size
 (defun get-element-size (session element-id)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/size")))
+    ((session-data-base session) "/element/" element-id "/size")))
 
 ;GET 	/session/:sessionId/element/:id/text
 (defun get-element-text (session element-id)
   (send-command
     session
     :get
-    ((session-data-base session) "element/" element-id "/text")))
+    ((session-data-base session) "/element/" element-id "/text")))
 
 ;POST 	/session/:sessionId/element/:id/value
 (defun get-element-value (session element-id)
   (send-command
     session
     :post
-    ((session-data-base session) "element/" element-id "/value")))
+    ((session-data-base session) "/element/" element-id "/value")))
 

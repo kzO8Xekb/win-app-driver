@@ -202,7 +202,7 @@
                  'win-app-driver::session))
              (concatenate
                'string
-               "^/session/" *session-id-regex* "/$"))
+               "^/session/" *session-id-regex* "$"))
            (is
              (win-app-driver::session-data-base
                (funcall
@@ -216,8 +216,7 @@
                  (funcall
                    notepad-session
                    :pandoric-get
-                   'win-app-driver::session))
-               "/")))
+                   'win-app-driver::session)))))
 
   (subtest "Testing find-element."
            ;(test-api
@@ -243,7 +242,7 @@
              :path           (concatenate
                                'string
                                base
-                               "element")))
+                               "/element")))
   (let*
     ((response (funcall
                  notepad-session
@@ -262,7 +261,7 @@
                :path           (concatenate
                                  'string
                                  base
-                                 "element/"
+                                 "/element/"
                                  element-id
                                  "/click")))
 
@@ -279,7 +278,7 @@
                :path           (concatenate
                                  'string
                                  base
-                                 "keys")))
+                                 "/keys")))
 
     (subtest "Testing close-window."
              (test-api
@@ -292,7 +291,7 @@
                :path           (concatenate
                                  'string
                                  base
-                                 "window")))
+                                 "/window")))
 
     (let
       ((element-id (get-element-id
@@ -312,7 +311,7 @@
                  :path           (concatenate
                                    'string
                                    base
-                                   "element/"
+                                   "/element/"
                                    element-id
                                    "/click"))))
     )
