@@ -220,25 +220,37 @@
                "/")))
 
   (subtest "Testing find-element."
+           ;(test-api
+           ;  (funcall
+           ;    notepad-session
+           ;    :find-element
+           ;    :name "Text editor")
+           ;  :app            nil
+           ;  :platform-name  nil
+           ;  :content-length "96"
+           ;  :path           (concatenate
+           ;                    'string
+           ;                    base
+           ;                    "/element"))
            (test-api
              (funcall
                notepad-session
                :find-element
-               :name "Text editor")
+               :class-name "RichEditD2DPT")
              :app            nil
              :platform-name  nil
              :content-length "96"
              :path           (concatenate
                                'string
                                base
-                               "/element")))
+                               "element")))
   (let*
     ((response (funcall
                  notepad-session
                  :find-element
-                 :name "Text editor"))
+                 :class-name "RichEditD2DPT"))
      (element-id (get-element-id response)))
-    (subtest "Testing click-element."
+    (subtest "Testing element-click."
              (test-api
                (funcall
                  notepad-session
@@ -250,7 +262,7 @@
                :path           (concatenate
                                  'string
                                  base
-                                 "/element/"
+                                 "element/"
                                  element-id
                                  "/click")))
 
@@ -267,7 +279,43 @@
                :path           (concatenate
                                  'string
                                  base
-                                 "/keys"))))
+                                 "keys")))
+
+    (subtest "Testing close-window."
+             (test-api
+               (funcall
+                 notepad-session
+                 :close-window)
+               :app            nil
+               :platform-name  nil
+               :content-length "63"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "window")))
+
+    (let
+      ((element-id (get-element-id
+                     (funcall
+                       notepad-session
+                       :find-element
+                       :automation-id "SecondaryButton"))))
+      (subtest "Testing element-click."
+               (test-api
+                 (funcall
+                   notepad-session
+                   :element-click
+                   element-id)
+                 :app            nil
+                 :platform-name  nil
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "element/"
+                                   element-id
+                                   "/click"))))
+    )
 
   (subtest "Testing delete-session."
            (test-api

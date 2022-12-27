@@ -210,7 +210,7 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:forward () 
                            (return-win-app-driver-server-response 
                              (forward session)))
-                 (:send-keys (keys) ; 形だけの実装
+                 (:send-keys (keys)
                              (return-win-app-driver-server-response 
                                (send-keys session keys)))
                  (:send-string (&rest string) ; 仕様外関数

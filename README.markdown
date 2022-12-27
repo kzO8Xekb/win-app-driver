@@ -35,7 +35,7 @@ Thank you very much.
 ```common-lisp
 (ql:quickload :win-app-driver)
 
-(setf (symbol-function 'notepad-session) (win-app-driver::create-session))
+(setf (symbol-function 'notepad-session) (win-app-driver:create-session))
 ;#<FUNCTION (LAMBDA (&REST #:ARGS539) :IN WIN-APP-DRIVER:CREATE-SESSION) {10025B50FB}>
 
 (notepad-session
@@ -57,15 +57,7 @@ Thank you very much.
 
 (notepad-session
   :find-element
-  :name "Edit")
-;"{\"sessionId\":\"CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56\",\"status\":0,\"value\":{\"ELEMENT\":\"42.1905664.4.10\"}}"
-;200
-;#<HASH-TABLE :TEST EQUAL :COUNT 4 {10025CA4B3}>
-;#<QURI.URI.HTTP:URI-HTTP http://localhost:12345/session/CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56//element>
-
-(notepad-session
-  :find-element
-  :name "Text editor")
+  :class-name "RichEditD2DPT")
 ;"{\"sessionId\":\"CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56\",\"status\":0,\"value\":{\"ELEMENT\":\"42.3802786\"}}"
 ;200
 ;#<HASH-TABLE :TEST EQUAL :COUNT 4 {10025CD483}>

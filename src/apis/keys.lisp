@@ -115,7 +115,7 @@
     (send-command
       session
       :post
-      ((session-data-base session) "/keys")
+      ((session-data-base session) "keys")
       val)))
 
 (defun send-string (session &rest strings)
