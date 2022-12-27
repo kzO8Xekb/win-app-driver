@@ -61,7 +61,7 @@ Thank you very much.
 ;"{\"sessionId\":\"CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56\",\"status\":0,\"value\":{\"ELEMENT\":\"42.3802786\"}}"
 ;200
 ;#<HASH-TABLE :TEST EQUAL :COUNT 4 {10025CD483}>
-;#<QURI.URI.HTTP:URI-HTTP http://localhost:12345/session/CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56//element>
+;#<QURI.URI.HTTP:URI-HTTP http://localhost:12345/session/CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56/element>
 
 (progn
   (notepad-session
@@ -71,14 +71,14 @@ Thank you very much.
 ;"{\"sessionId\":\"CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56\",\"status\":0}"
 ;200
 ;#<HASH-TABLE :TEST EQUAL :COUNT 4 {10025E52F3}>
-;#<QURI.URI.HTTP:URI-HTTP http://localhost:12345/session/CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56//keys>
+;#<QURI.URI.HTTP:URI-HTTP http://localhost:12345/session/CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56/keys>
 
 (notepad-session
   :get-element-text "42.3802786")
 ;"{\"sessionId\":\"CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56\",\"status\":0,\"value\":\"hello, world\"}"
 ;200
 ;#<HASH-TABLE :TEST EQUAL :COUNT 4 {10025E7C03}>
-;#<QURI.URI.HTTP:URI-HTTP http://localhost:12345/session/CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56//element/42.3802786/text>
+;#<QURI.URI.HTTP:URI-HTTP http://localhost:12345/session/CF3B1FB7-E4F5-485F-AB3A-D8CDEAD48E56/element/42.3802786/text>
 ```
 ## Installation
 
