@@ -158,12 +158,22 @@
     :get
     ((session-data-base session) "/source")))
 
+; In the case of webdriver, there are three types of timeouts: "script", "pageLoad", and "implicit".
+; see https://www.w3.org/TR/webdriver/#dfn-timeouts-configuration
+;
+; For now, only "implicit" is supported.
+(declaim (inline generate-content-of-timeouts))
+(defun generate-content-of-timeouts (&key implicit)
+  (jonathan:to-json `(:|implicit| ,implicit)))
+
 ;POST 	/session/:sessionId/timeouts
-(defun set-timeouts (session)
+(defun set-timeouts (session &key implicit)
   (send-command
     session
     :post
-    ((session-data-base session) "/timeouts")))
+    ((session-data-base session) "/timeouts")
+    (generate-content-of-timeouts
+      :implicit implicit)))
 
 ;GET 	/session/:sessionId/title
 (defun get-title (session)
@@ -249,40 +259,51 @@
     :post
     ((session-data-base session) "/window/maximize")))
 
+(declaim (inline generate-content-of-window-size))
+(defun generate-content-of-window-size (width height)
+  (jonathan:to-json `(:|height| ,height :|width| ,width)))
+
 ;POST 	/session/:sessionId/window/size
-(defun get-window-size (session)
+(defun set-window-size (session width height)
   (send-command
     session
     :post
-    ((session-data-base session) "/window/size")))
+    ((session-data-base session) "/window/size")
+    (generate-content-of-window-size width height)))
 
 ;GET 	/session/:sessionId/window/size
-(defun set-window-size (session)
+(defun get-window-size (session)
   (send-command
     session
     :get
     ((session-data-base session) "/window/size")))
 
 ;POST 	/session/:sessionId/window/:windowHandle/size
-(defun get-window-size-with-window-handle (session window-handle)
+(defun set-window-size-with-window-handle (session window-handle width height)
   (send-command
     session
     :post
-    ((session-data-base session) "/window/" window-handle "/size")))
+    ((session-data-base session) "/window/" window-handle "/size")
+    (generate-content-of-window-size width height)))
 
 ;GET 	/session/:sessionId/window/:windowHandle/size
-(defun set-window-size-with-window-handle (session window-handle)
+(defun get-window-size-with-window-handle (session window-handle)
   (send-command
     session
     :get
     ((session-data-base session) "/window/" window-handle "/size")))
 
+(declaim (inline generate-content-of-window-position))
+(defun generate-content-of-window-position (x y)
+  (jonathan:to-json `(:|x| ,x :|y| ,y)))
+
 ;POST 	/session/:sessionId/window/:windowHandle/position
-(defun set-window-position-with-window-handle (session window-handle)
+(defun set-window-position-with-window-handle (session window-handle x y)
   (send-command
     session
     :post
-    ((session-data-base session) "/window/" window-handle "/position")))
+    ((session-data-base session) "/window/" window-handle "/position")
+    (generate-content-of-window-position x y)))
 
 ;GET 	/session/:sessionId/window/:windowHandle/position
 (defun get-window-position-with-window-handle (session window-handle)

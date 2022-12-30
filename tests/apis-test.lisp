@@ -26,13 +26,18 @@
 ;; NOTE: To run this test file, execute `(asdf:test-system :win-app-driver)' in your Lisp.
 
 (defparameter *session-id-regex* "[0-9A-F]{1,8}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,12}")
+(defparameter *window-handle-regex* "^0x[0-9A-F]{1,8}$")
 
 (lol:defmacro! test-api (test-code
                           &key
                           (session-id       t)
                           (status           0)
-                          (app              "")
-                          (platform-name    "Windows")
+                          (app              `(is
+                                               (getf (win-app-driver::get-value $json) :|app|)
+                                               nil))
+                          (platform-name    `(is
+                                               (getf (win-app-driver::get-value $json) :|platformName|)
+                                               nil))
                           (http-status-code 200)
                           (server           "Microsoft-HTTPAPI/2.0")
                           (content-type     "application/json")
@@ -42,45 +47,41 @@
                           (port             *win-app-driver-port*)
                           (path             ""))
                `(multiple-value-bind
-                  (,g!json ,g!code ,g!hash ,g!quri)
+                  ($json $code $hash $quri)
                   ,test-code
                   (progn
                     (when ,session-id
                       (like
-                        (getf (jonathan:parse ,g!json) :|sessionId|)
+                        (getf (jonathan:parse $json) :|sessionId|)
                         (concatenate 'string "^" win-app-driver/tests::*session-id-regex* "$")))
                     (is
-                      (getf (jonathan:parse ,g!json) :|status|)
+                      (getf (jonathan:parse $json) :|status|)
                       ,status)
+                    ,app
+                    ,platform-name
                     (is
-                      (getf (getf (jonathan:parse ,g!json) :|value|) :|app|)
-                      ,app)
-                    (is
-                      (getf (getf (jonathan:parse ,g!json) :|value|) :|platformName|)
-                      ,platform-name)
-                    (is
-                      ,g!code
+                      $code
                       ,http-status-code)
                     (is-values
-                      (gethash "server" ,g!hash)
+                      (gethash "server" $hash)
                       '(,server t))
                     (is-values
-                      (gethash "content-type" ,g!hash)
+                      (gethash "content-type" $hash)
                       '(,content-type t))
                     (is-values
-                      (gethash "content-length" ,g!hash)
+                      (gethash "content-length" $hash)
                       '(,content-length t))
                     (is
-                      (quri:uri-scheme ,g!quri)
+                      (quri:uri-scheme $quri)
                       ,protcol)
                     (is
-                      (quri:uri-host ,g!quri)
+                      (quri:uri-host $quri)
                       ,host)
                     (is
-                      (quri:uri-port ,g!quri)
+                      (quri:uri-port $quri)
                       ,port)
                     (is
-                      (quri:uri-path ,g!quri)
+                      (quri:uri-path $quri)
                       ,path))))
 ;(multiple-value-bind
 ;  ($0 $1 $2 $3)
@@ -153,23 +154,32 @@
                :host           *win-app-driver-host*
                :port           *win-app-driver-port*
                :app            "C:/Windows/System32/notepad.exe")
-             :app            "C:/Windows/System32/notepad.exe"
+             :app            (is
+                               (getf
+                                 (win-app-driver::get-value $json)
+                                 :|app|)
+                               "C:/Windows/System32/notepad.exe")
+             :platform-name  (is
+                               (getf
+                                 (win-app-driver::get-value $json)
+                                 :|platformName|)
+                               "Windows")
              :path           "/session"
              :content-length "138")
 
            (setf base (win-app-driver::session-data-base
-                                 (funcall
-                                   notepad-session
-                                   :pandoric-get
-                                   'win-app-driver::session)))
+                        (funcall
+                          notepad-session
+                          :pandoric-get
+                          'win-app-driver::session)))
 
            ; initialized session-data check.
            (like
              (win-app-driver::session-data-id
-                              (funcall
-                                notepad-session
-                                :pandoric-get
-                                'win-app-driver::session))
+               (funcall
+                 notepad-session
+                 :pandoric-get
+                 'win-app-driver::session))
              (concatenate
                'string
                "^" *session-id-regex* "$"))
@@ -236,8 +246,6 @@
                notepad-session
                :find-element
                :class-name "RichEditD2DPT")
-             :app            nil
-             :platform-name  nil
              :content-length "96"
              :path           (concatenate
                                'string
@@ -255,8 +263,6 @@
                  notepad-session
                  :element-click
                  element-id)
-               :app            nil
-               :platform-name  nil
                :content-length "63"
                :path           (concatenate
                                  'string
@@ -272,21 +278,184 @@
                  :send-string
                  "Hello, World!"
                  :enter)
-               :app            nil
-               :platform-name  nil
                :content-length "63"
                :path           (concatenate
                                  'string
                                  base
                                  "/keys")))
 
+    (subtest "Testing generate-content-of-window-size."
+             (is
+               (win-app-driver::generate-content-of-timeouts
+                 :implicit 12345)
+               "{\"implicit\":12345}"))
+
+    (subtest "Testing set-timeouts."
+             (test-api
+               (funcall
+                 notepad-session
+                 :set-timeouts
+                 :implicit 2500)
+               :content-length "63"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/timeouts")))
+
+    (subtest "Testing get-window-handle."
+             (test-api
+               (funcall
+                 notepad-session
+                 :get-window-handle)
+               :app            (like
+                                 (win-app-driver::get-value $json)
+                                 *window-handle-regex*)
+               :content-length "84"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/window_handle")
+               :platform-name  (like
+                                 (win-app-driver::get-value $json)
+                                 *window-handle-regex*)))
+
+    (subtest "Testing get-window-handles."
+             (test-api
+               (funcall
+                 notepad-session
+                 :get-window-handles)
+               :app            (like
+                                 (first (win-app-driver::get-value $json))
+                                 *window-handle-regex*)
+               :content-length "86"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/window_handles")
+               :platform-name  (like
+                                 (first (win-app-driver::get-value $json))
+                                 *window-handle-regex*)))
+
+    (subtest "Testing get-window-size."
+             (test-api
+               (funcall
+                 notepad-session
+                 :get-window-size)
+               :content-length "99"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/window/size")))
+
+    (subtest "Testing generate-content-of-window-size."
+             (is
+               (win-app-driver::generate-content-of-window-size 123 456)
+               "{\"height\":456,\"width\":123}"))
+
+    (let*
+      ((response (funcall
+                   notepad-session
+                   :get-window-size))
+       (before-width    (getf (win-app-driver::get-value response) :|width|))
+       (before-height   (getf (win-app-driver::get-value response) :|height|))
+       (after-width 0)
+       (after-height 0))
+      (subtest "Testing set-window-size."
+               (test-api
+                 (funcall
+                   notepad-session
+                   :set-window-size
+                   387
+                   456)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/window/size"))
+               (setf
+                 response     (funcall notepad-session :get-window-size)
+                 after-width  (getf (win-app-driver::get-value response) :|width|)
+                 after-height (getf (win-app-driver::get-value response) :|height|))
+               (is
+                 (getf (win-app-driver::get-value response) :|width|)
+                 387)
+               (is
+                 (getf (win-app-driver::get-value response) :|height|)
+                 456))
+      (funcall
+        notepad-session
+        :set-window-size
+        before-width
+        before-height))
+
+    (subtest "Testing generate-content-of-window-position."
+         (is
+           (win-app-driver::generate-content-of-window-position 123 456)
+           "{\"x\":123,\"y\":456}"))
+
+    (subtest "Testing get-window-position-with-window-handle."
+             (let
+               ((handle (win-app-driver::get-value
+                          (funcall
+                            notepad-session
+                            :get-window-handle))))
+               (test-api
+                 (funcall
+                   notepad-session
+                   :get-window-position-with-window-handle
+                   handle)
+                 :content-length "88"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/window/"
+                                   handle
+                                   "/position"))))
+
+    (let*
+      ((handle (win-app-driver::get-value
+                 (funcall
+                   notepad-session
+                   :get-window-handle)))
+       (response (funcall
+                   notepad-session
+                   :get-window-position-with-window-handle
+                   handle))
+       (x        (getf (win-app-driver::get-value response) :|x|))
+       (y        (getf (win-app-driver::get-value response) :|y|)))
+      (subtest "Testing set-window-position-with-window-handle."
+               (test-api
+                 (funcall
+                   notepad-session
+                   :set-window-position-with-window-handle
+                   handle
+                   433
+                   88)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/window/"
+                                   handle
+                                   "/position"))
+               (is
+                 (getf (win-app-driver::get-value response) :|x|)
+                 433)
+               (is
+                 (getf (win-app-driver::get-value response) :|y|)
+                 88))
+      (funcall
+        notepad-session
+        :set-window-position-with-window-handle
+        handle
+        x
+        y))
+
     (subtest "Testing close-window."
              (test-api
                (funcall
                  notepad-session
                  :close-window)
-               :app            nil
-               :platform-name  nil
                :content-length "63"
                :path           (concatenate
                                  'string
@@ -305,8 +474,6 @@
                    notepad-session
                    :element-click
                    element-id)
-                 :app            nil
-                 :platform-name  nil
                  :content-length "63"
                  :path           (concatenate
                                    'string
@@ -320,8 +487,6 @@
            (test-api
              (funcall notepad-session :delete-session)
              :session-id     nil
-             :app            nil
-             :platform-name  nil
              :content-length "12"
              :path           base))
   )

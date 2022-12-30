@@ -70,6 +70,7 @@
   ; utilities/util.lisp
   (:export
     :it
-    :value-accessor)
+    :response-accessor
+    :get-value)
   )
 

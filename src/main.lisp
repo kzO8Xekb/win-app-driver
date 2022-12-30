@@ -70,6 +70,173 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
 ;      (values ,g!json ,g!status-code ,g!hash ,g!quri))))
 
 (defun create-session ()
+  "create-session
+  _/_/_/ summary _/_/_/
+  This function create and return a session with WinAppDriver.
+
+  _/_/_/ argument _/_/_/
+  NIL
+
+  _/_/_/ return value _/_/_/
+  FUNCTION, Closure representing a WinAppDriver session.
+  
+  _/_/_/ support commands list _/_/_/
+  The closure supports the following WinAppDriver commands.
+  
+  Command Symbol
+    Arguments
+
+  :active-element
+  :back
+  :button-down
+  :button-up
+  :click
+  :close-app (for appium command)
+  :close-window
+  :delete-session
+  :doubleclick
+  :element-clear
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+  :element-click
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+  :element-equals
+    element-id, string, This argument should specify the element ID of the element to be investigated.
+  :find-element
+    selector, symbol, This argument specify how to search for element ID.
+                        Selector                   Description
+                        :accessibility-id-selector finding element accessibility id.
+                        :accessibility-id          finding element accessibility id.
+                        :automation-id-selector    finding element accessibility id.
+                        :automation-id             finding element accessibility id.
+                        :class-name-selector       finding element class name.
+                        :class-name                finding element class name.
+                        :name-selector             finding element name.
+                        :name                      finding element name.
+                        :xpath-selector            finding element xpath.
+                        :xpath                     finding element xpath.
+    value,    string, This argument should be a string to identify the element.
+  :find-element-from-element
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+    selector, symbol, This argument specify how to search for element ID.
+                        Selector                   Description
+                        :accessibility-id-selector finding element accessibility id.
+                        :accessibility-id          finding element accessibility id.
+                        :automation-id-selector    finding element accessibility id.
+                        :automation-id             finding element accessibility id.
+                        :class-name-selector       finding element class name.
+                        :class-name                finding element class name.
+                        :name-selector             finding element name.
+                        :name                      finding element name.
+                        :xpath-selector            finding element xpath.
+                        :xpath                     finding element xpath.
+    value,    string, This argument should be a string to identify the element.
+  :find-element-from-elements
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+    selector, symbol, This argument specify how to search for element IDs.
+                        Selector                   Description
+                        :accessibility-id-selector finding element accessibility id.
+                        :accessibility-id          finding element accessibility id.
+                        :automation-id-selector    finding element accessibility id.
+                        :automation-id             finding element accessibility id.
+                        :class-name-selector       finding element class name.
+                        :class-name                finding element class name.
+                        :name-selector             finding element name.
+                        :name                      finding element name.
+                        :xpath-selector            finding element xpath.
+                        :xpath                     finding element xpath.
+    value,    string, This argument should be a string to identify the elements.
+  :find-elements
+    selector, symbol, This argument specify how to search for element IDs.
+                        Selector                   Description
+                        :accessibility-id-selector finding element accessibility id.
+                        :accessibility-id          finding element accessibility id.
+                        :automation-id-selector    finding element accessibility id.
+                        :automation-id             finding element accessibility id.
+                        :class-name-selector       finding element class name.
+                        :class-name                finding element class name.
+                        :name-selector             finding element name.
+                        :name                      finding element name.
+                        :xpath-selector            finding element xpath.
+                        :xpath                     finding element xpath.
+    value,    string, This argument should be a string to identify the elements.
+  :forward
+  :get-element-attribute
+    element-id,     string, This argument should specify the element ID of the element you wish to operate on.
+    attribute-name, string, This argument should be the name of the attribute.
+  :get-element-location
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+  :get-element-location-in-view
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+  :get-element-name
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+  :get-element-size
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+  :get-element-text
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+  :get-element-value
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+  :get-sessions
+  :get-source
+  :get-title
+  :get-window-handle
+  :get-window-handles
+  :get-window-position-with-window-handle
+    window-handle, string, This argument should specify the handle of the window you wish to operate on.
+  :get-window-size
+  :get-window-size-with-window-handle
+    window-handle, string, This argument should specify the handle of the window you wish to operate on.
+  :is-element-displayed
+    element-id, string, This argument should specify the element ID of the element to be investigated.
+  :is-element-enabled
+    element-id, string, This argument should specify the element ID of the element to be investigated.
+  :is-element-selected
+    element-id, string, This argument should specify the element ID of the element to be investigated.
+  :launch-app (for appium command)
+  :location
+  :maximize-window
+  :move-to
+  :new-session
+    app,                  [key]string, Application identifier or executable full path. ex. \"Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge\"
+    app-arguments,        [key]string, Application launch arguments. ex. \"https://github.com/Microsoft/WinAppDriver\"
+                                       When specifying the executable full path, \"\\\" should be converted to \"/\". This is bug sorry.
+    app-top-level-window, [key]string, Existing application top level window to attach to. ex. \"0xB822E2\"
+    app-working-dir,      [key]string, Application working directory (Classic apps only). ex. \"C:\\Temp\"
+    device-name,          [key]string, Application working device type name. ex. \"WindowsPC\"
+    platform-name,        [key]string, Target platform name. ex. \"Windows\"
+    platform-version,     [key]string, Target platform version. ex. \"1.0\"
+  :orientation
+  :send-keys
+    keys, list, List of keyboard actions to be sent to the WinAppDriver server. For more information on keyboard actions, see \"https://www.w3.org/TR/webdriver1/#keyboard-actions\".
+  :send-string
+    string, [rest]string, (Out of specification function)Specify the string you want to send to the WinAppDriver server.
+  :set-timeouts
+    implicit, [key]integer, This argument should specify the new implicit wait timeout.
+  :set-window-position-with-window-handle
+    window-handle, string,  This argument should specify the handle of the window you wish to operate on.
+    x,             integer, This argument should specify the new x-axis value.
+    y,             integer, This argument should specify the new y-axis value.
+  :set-window-size
+    width,  integer, This argument should specify the new width value.
+    height, integer, This argument should specify the new height value.
+  :set-window-size-with-window-handle
+    window-handle, string,  This argument should specify the handle of the window you wish to operate on.
+    width,         integer, This argument should specify the new width value.
+    height,        integer, This argument should specify the new height value.
+  :status
+  :switch-to-window
+  :take-element-screenshot
+  :take-screenshot
+  :touch-click
+  :touch-doubleclick
+  :touch-down
+  :touch-flick
+  :touch-longclick
+  :touch-move
+  :touch-scroll
+  :touch-up
+  :window-maximize-with-window-handle
+    window-handle, string,  This argument should specify the handle of the window you wish to operate on.
+  "
   (macrolet
     ((return-win-app-driver-server-response (expr &body body)
                                             (with-gensyms
@@ -230,9 +397,10 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:get-source () 
                               (return-win-app-driver-server-response 
                                 (get-source session)))
-                 (:set-timeouts () 
+                 (:set-timeouts (&key implicit) 
                                 (return-win-app-driver-server-response 
-                                  (set-timeouts session)))
+                                  (set-timeouts session
+                                                :implicit implicit)))
                  (:get-title () 
                              (return-win-app-driver-server-response 
                                (get-title session)))
@@ -272,28 +440,28 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:get-window-size () 
                                    (return-win-app-driver-server-response 
                                      (get-window-size session)))
-                 (:set-window-size () 
-                                   (return-win-app-driver-server-response 
-                                     (set-window-size session)))
+                 (:set-window-size (width height)
+                                   (return-win-app-driver-server-response
+                                     (set-window-size session width height)))
                  (:get-window-size-with-window-handle (window-handle) 
                                                       (return-win-app-driver-server-response 
                                                         (get-window-size-with-window-handle session window-handle)))
-                 (:set-window-size-with-window-handle (window-handle) 
-                                                      (return-win-app-driver-server-response 
-                                                        (set-window-size-with-window-handle session window-handle)))
+                 (:set-window-size-with-window-handle (window-handle width height)
+                                                      (return-win-app-driver-server-response
+                                                        (set-window-size-with-window-handle session window-handle width height)))
                  (:get-window-position-with-window-handle (window-handle) 
                                                           (return-win-app-driver-server-response 
                                                             (get-window-position-with-window-handle session window-handle)))
-                 (:set-window-position-with-window-handle (window-handle) 
-                                                          (return-win-app-driver-server-response 
-                                                            (set-window-position-with-window-handle session window-handle)))
+                 (:set-window-position-with-window-handle (window-handle x y) 
+                                                          (return-win-app-driver-server-response
+                                                            (set-window-position-with-window-handle session window-handle x y)))
                  (:window-maximize-with-window-handle (window-handle)
                                                       (return-win-app-driver-server-response 
                                                         (window-maximize-with-window-handle session window-handle)))
-                 (:get-window-handle ()  ; ToDo 形だけの実装
+                 (:get-window-handle ()
                                      (return-win-app-driver-server-response 
                                        (get-window-handle session)))
-                 (:get-window-handles () ; ToDo 形だけの実装
+                 (:get-window-handles ()
                                       (return-win-app-driver-server-response
                                         (get-window-handles session))))
           self (lambda (&rest args)
