@@ -237,21 +237,3 @@
     :post
     ((session-data-base session) "/window")))
 
-; HTTP Command:  POST
-; Path:         /session/:sessionId/window/maximize
-; This function is not yet implemented.
-(defun maximize-window (session)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/window/maximize")))
-
-; HTTP Command: POST
-; Path:         /session/:sessionId/window/:windowHandle/maximize
-; This function is not yet implemented.
-(defun window-maximize-with-window-handle (session window-handle)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/window/" window-handle "/maximize")))
-

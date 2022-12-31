@@ -45,14 +45,14 @@
 ;    :post
 ;    ((session-data-base session) "/window")))
 
-; POST 	/session/:sessionId/window/maximize
-; This function is not yet implemented. It is temporarily stored in "api.lisp".
-; Uncomment it after implementation and testing.
-;(defun maximize-window (session)
-;  (send-command
-;    session
-;    :post
-;    ((session-data-base session) "/window/maximize")))
+; Maximize Window
+; HTTP Command:  POST
+; Path:         /session/:sessionId/window/maximize
+(defun maximize-window (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/window/maximize")))
 
 (declaim (inline generate-content-of-window-size))
 (defun generate-content-of-window-size (width height)
@@ -119,12 +119,13 @@
     :get
     ((session-data-base session) "/window/" window-handle "/position")))
 
-; POST 	/session/:sessionId/window/:windowHandle/maximize
-; This function is not yet implemented. It is temporarily stored in "api.lisp".
-; Uncomment it after implementation and testing.
-;(defun window-maximize-with-window-handle (session window-handle)
-;  (send-command
-;    session
-;    :post
-;    ((session-data-base session) "/window/" window-handle "/maximize")))
+
+; Window Maximize with WindowHandle
+; HTTP Command:  POST
+; Path:         /session/:sessionId/window/:windowHandle/maximize
+(defun window-maximize-with-window-handle (session window-handle)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/window/" window-handle "/maximize")))
 

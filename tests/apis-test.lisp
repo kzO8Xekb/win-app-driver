@@ -347,6 +347,7 @@
                                  base
                                  "/window/size")))
 
+    ;; Testing window size.
     (subtest "Testing generate-content-of-window-size."
              (is
                (win-app-driver::generate-content-of-window-size 123 456)
@@ -359,7 +360,11 @@
        (before-width    (getf (win-app-driver::get-value response) :|width|))
        (before-height   (getf (win-app-driver::get-value response) :|height|))
        (after-width 0)
-       (after-height 0))
+       (after-height 0)
+       (handle (win-app-driver::get-value
+                          (funcall
+                            notepad-session
+                            :get-window-handle))))
       (subtest "Testing set-window-size."
                (test-api
                  (funcall
@@ -382,11 +387,97 @@
                (is
                  (getf (win-app-driver::get-value response) :|height|)
                  456))
+      
       (funcall
         notepad-session
         :set-window-size
         before-width
-        before-height))
+        before-height)
+
+      (subtest "Testing set-window-size-with-window-handle."
+               (test-api
+                 (funcall
+                   notepad-session
+                   :set-window-size-with-window-handle
+                   handle
+                   387
+                   456)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/window/"
+                                   handle
+                                   "/size"))
+               (setf
+                 response     (funcall notepad-session :get-window-size)
+                 after-width  (getf (win-app-driver::get-value response) :|width|)
+                 after-height (getf (win-app-driver::get-value response) :|height|))
+               (is
+                 (getf (win-app-driver::get-value response) :|width|)
+                 387)
+               (is
+                 (getf (win-app-driver::get-value response) :|height|)
+                 456))
+
+      (subtest "Testing maximize-window."
+               (test-api
+                 (funcall
+                   notepad-session
+                   :maximize-window)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/window/maximize"))
+               (setf
+                 response     (funcall notepad-session :get-window-size)
+                 after-width  (getf (win-app-driver::get-value response) :|width|)
+                 after-height (getf (win-app-driver::get-value response) :|height|))
+               (is
+                 (getf (win-app-driver::get-value response) :|width|)
+                 1922)
+               (is
+                 (getf (win-app-driver::get-value response) :|height|)
+                 1030))
+
+      (funcall
+        notepad-session
+        :set-window-size
+        before-width
+        before-height)
+
+      (subtest "Testing window-maximize-with-window-handle."
+               (test-api
+                 (funcall
+                   notepad-session
+                   :window-maximize-with-window-handle
+                   handle)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/window/"
+                                   handle
+                                   "/maximize"))
+               (setf
+                 response     (funcall notepad-session :get-window-size)
+                 after-width  (getf (win-app-driver::get-value response) :|width|)
+                 after-height (getf (win-app-driver::get-value response) :|height|))
+               (is
+                 (getf (win-app-driver::get-value response) :|width|)
+                 1922)
+               (is
+                 (getf (win-app-driver::get-value response) :|height|)
+                 1030))
+
+      (funcall
+        notepad-session
+        :set-window-size
+        before-width
+        before-height)
+
+      )
 
     (subtest "Testing generate-content-of-window-position."
          (is
@@ -423,7 +514,7 @@
                    handle))
        (x        (getf (win-app-driver::get-value response) :|x|))
        (y        (getf (win-app-driver::get-value response) :|y|)))
-      (subtest "Testing set-window-position-with-window-handle."
+      (subtest "testing set-window-position-with-window-handle."
                (test-api
                  (funcall
                    notepad-session
@@ -438,18 +529,25 @@
                                    "/window/"
                                    handle
                                    "/position"))
+               (setf response (funcall
+                                notepad-session
+                                :get-window-position-with-window-handle
+                                handle))
                (is
                  (getf (win-app-driver::get-value response) :|x|)
                  433)
                (is
                  (getf (win-app-driver::get-value response) :|y|)
                  88))
+
       (funcall
         notepad-session
         :set-window-position-with-window-handle
         handle
         x
-        y))
+        y)
+
+      )
 
     (subtest "Testing close-window."
              (test-api
