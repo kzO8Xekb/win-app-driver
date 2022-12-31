@@ -82,7 +82,9 @@
 (defun get-element-id (response)
   (getf (response-accessor response :|value|) :ELEMENT))
 
-;POST 	/session/:sessionId/element
+; Find Element
+; HTTP Command: POST
+; Path:         /session/:sessionId/element
 (defun find-element (session selector value)
   (send-command
     session
@@ -92,7 +94,10 @@
       selector
       value)))
 
-;POST 	/session/:sessionId/elements
+; Find Elements
+; HTTP Command: POST
+; Path:         /session/:sessionId/elements
+; This function is not yet implemented.
 (defun find-elements (session selector value) 
   (send-command
     session
@@ -102,42 +107,59 @@
       selector
       value)))
 
-;POST 	/session/:sessionId/element/active
+; Active Element
+; HTTP Command: POST
+; Path:         /session/:sessionId/element/active
+; This function is not yet implemented.
 (defun active-element (session)
   (send-command
     session
     :post
     ((session-data-base session) "/element/active")))
 
-;GET 	/session/:sessionId/element/:id/attribute/:name
+; Get Element Attribute
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/attribute/:name
+; This function is not yet implemented.
 (defun get-element-attribute (session element-id attribute-name)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/attribute/" attribute-name)))
 
-;POST 	/session/:sessionId/element/:id/clear
+; Element Clear
+; HTTP Command: POST
+; Path:         /session/:sessionId/element/:id/clear
+; This function is not yet implemented.
 (defun element-clear (session element-id)
   (send-command
     session
     :post
     ((session-data-base session) "/element/" element-id "/clear")))
 
-;POST 	/session/:sessionId/element/:id/click
+; Element Click
+; HTTP Command: POST
+; Path:         /session/:sessionId/element/:id/click
 (defun element-click (session element-id)
   (send-command
     session
     :post
     ((session-data-base session) "/element/" element-id "/click")))
 
-;GET 	/session/:sessionId/element/:id/displayed
+; Is Element Displayed
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/displayed
+; This function is not yet implemented.
 (defun is-element-displayed (session element-id)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/displayed")))
 
-;GET 	/session/:sessionId/element/:id/element
+; Find Element from Element
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/element
+; This function is not yet implemented.
 (defun find-element-from-element (session element-id selector value)
   (send-command
     session
@@ -147,7 +169,10 @@
       selector
       value)))
 
-;GET 	/session/:sessionId/element/:id/elements
+; Find Element from Elements
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/elements
+; This function is not yet implemented.
 (defun find-element-from-elements (session element-id selector value)
   (send-command
     session
@@ -157,70 +182,99 @@
       selector
       value)))
 
-;GET 	/session/:sessionId/element/:id/enabled
+; Is Element Enabled
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/enabled
+; This function is not yet implemented.
 (defun is-element-enabled (session element-id)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/enabled")))
 
-;GET 	/session/:sessionId/element/:id/equals
+; Element Equals
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/equals
+; This function is not yet implemented.
 (defun element-equals (session element-id)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/equals")))
 
-;GET 	/session/:sessionId/element/:id/location
-(defun get-element-location (session element-id)
+; Get Element Location
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/location
+; This function is not yet implemented.
+(Defun get-element-location (Session element-id)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/location")))
 
-;GET 	/session/:sessionId/element/:id/location_in_view
+; Get Element Location in View
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/location_in_view
+; This function is not yet implemented.
 (defun get-element-location-in-view (session element-id)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/location_in_view")))
 
-;GET 	/session/:sessionId/element/:id/name
+; Get Element Name
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/name
+; This function is not yet implemented.
 (defun get-element-name (session element-id)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/name")))
 
-;GET 	/session/:sessionId/element/:id/screenshot
+; Take Element Screenshot
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/screenshot
+; This function is not yet implemented.
 (defun take-element-screenshot (session element-id)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/screenshot")))
 
-;GET 	/session/:sessionId/element/:id/selected
+; Is Element Selected
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/selected
+; This function is not yet implemented.
 (defun is-element-selected (session element-id)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/selected")))
 
-;GET 	/session/:sessionId/element/:id/size
+; Get Element Size
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/size
+; This function is not yet implemented.
 (defun get-element-size (session element-id)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/size")))
 
-;GET 	/session/:sessionId/element/:id/text
+; Get Element Text
+; HTTP Command: GET
+; Path:         /session/:sessionId/element/:id/text
 (defun get-element-text (session element-id)
   (send-command
     session
     :get
     ((session-data-base session) "/element/" element-id "/text")))
 
-;POST 	/session/:sessionId/element/:id/value
+; Get Element Value
+; HTTP Command: POST
+; Path:         /session/:sessionId/element/:id/value
+; This function is not yet implemented.
 (defun get-element-value (session element-id)
   (send-command
     session

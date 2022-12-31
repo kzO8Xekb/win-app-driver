@@ -22,314 +22,236 @@
 
 (in-package :win-app-driver)
 
-;(defparameter +empty-data+ "{\"\": \"\"}")
+; All functions in this file are unimplemented.
+; Even if it works, it has not been tested.
 
 ;; Command Summary
 ;; see https://github.com/microsoft/WinAppDriver/blob/master/Docs/SupportedAPIs.md
 ; The following is a list of APIs supported by WinAppDriver:
 ; HTTP 	Path
 
-; Status
-; GET /status
-; WinAppDriver Serverのステータスを取得する。
-(defun status (session)
-  (send-command
-    session
-    :get
-    ("/status")))
-
-; New Session
-; HTTP Method: POST
-; URI Template: /session
-; The new-session command create a new Windows Application Driver session with the endpoint node.
-(defun new-session (session)
-  (send-command
-    session
-    :post
-    ("/session")
-    (session-data-capabilities session)))
-
-; Get Sessions
-; HTTP Method: GET
-; URI Template: /sessions
-(defun get-sessions (session)
-  (send-command
-    session
-    :get
-    ("/sessions")))
-
-; Delete Session
-; HTTP Method: DELETE
-; URI Template: /session/:sessionId
-(defun delete-session (session)
-  (send-command
-    session
-    :delete
-    ((session-data-base session))))
-
-;POST 	/session/:sessionId/appium/app/launch
+; HTTP Command:  POST
+; Path:         /session/:sessionId/appium/app/launch
+; This function is not yet implemented.
 (defun launch-app (session)
   (send-command
     session
     :post
     ((session-data-base session) "/appium/app/launch")))
 
-;POST 	/session/:sessionId/appium/app/close
+; HTTP Command:  POST
+; Path:         /session/:sessionId/appium/app/close
+; This function is not yet implemented.
 (defun close-app (session)
   (send-command
     session
     :post
     ((session-data-base session) "/appium/app/close")))
 
-;POST 	/session/:sessionId/back
+; HTTP Command:  POST
+; Path:         /session/:sessionId/back
+; This function is not yet implemented.
 (defun back (session)
   (send-command
     session
     :post
     ((session-data-base session) "/back")))
 
-;POST 	/session/:sessionId/buttondown
+; HTTP Command:  POST
+; Path:         /session/:sessionId/buttondown
+; This function is not yet implemented.
 (defun button-down (session)
   (send-command
     session
     :post
     ((session-data-base session) "/buttondown")))
 
-;POST 	/session/:sessionId/buttonup
+; HTTP Command:  POST
+; Path:         /session/:sessionId/buttonup
+; This function is not yet implemented.
 (defun button-up (session)
   (send-command
     session
     :post
     ((session-data-base session) "/buttonup")))
 
-;POST 	/session/:sessionId/click
+; HTTP Command:  POST
+; Path:         /session/:sessionId/click
+; This function is not yet implemented.
 (defun click (session)
   (send-command
     session
     :post
     ((session-data-base session) "/click")))
 
-;POST 	/session/:sessionId/doubleclick
+; HTTP Command:  POST
+; Path:         /session/:sessionId/doubleclick
+; This function is not yet implemented.
 (defun doubleclick (session)
   (send-command
     session
     :post
     ((session-data-base session) "/doubleclick")))
 
-;POST 	/session/:sessionId/forward
+; HTTP Command:  POST
+; Path:         /session/:sessionId/forward
+; This function is not yet implemented.
 (defun forward (session)
   (send-command
     session
     :post
     ((session-data-base session) "/forward")))
 
-;GET 	/session/:sessionId/location
+; HTTP Command:  GET
+; Path:         /session/:sessionId/location
+; This function is not yet implemented.
 (defun location (session)
   (send-command
     session
     :get
     ((session-data-base session) "/location")))
 
-;POST 	/session/:sessionId/moveto
+; HTTP Command:  POST
+; Path:         /session/:sessionId/moveto
+; This function is not yet implemented.
 (defun move-to (session)
   (send-command
     session
     :post
     ((session-data-base session) "/moveto")))
 
-;GET 	/session/:sessionId/orientation
+; HTTP Command:  GET
+; Path:         /session/:sessionId/orientation
+; This function is not yet implemented.
 (defun orientation (session)
   (send-command
     session
     :get
     ((session-data-base session) "/orientation")))
 
-;GET 	/session/:sessionId/screenshot
+; HTTP Command:  GET
+; Path:         /session/:sessionId/screenshot
+; This function is not yet implemented.
 (defun take-screenshot (session)
   (send-command
     session
     :get
     ((session-data-base session) "/screenshot")))
 
-;GET 	/session/:sessionId/source
+; HTTP Command:  GET
+; Path:         /session/:sessionId/source
+; This function is not yet implemented.
 (defun get-source (session)
   (send-command
     session
     :get
     ((session-data-base session) "/source")))
 
-; In the case of webdriver, there are three types of timeouts: "script", "pageLoad", and "implicit".
-; see https://www.w3.org/TR/webdriver/#dfn-timeouts-configuration
-;
-; For now, only "implicit" is supported.
-(declaim (inline generate-content-of-timeouts))
-(defun generate-content-of-timeouts (&key implicit)
-  (jonathan:to-json `(:|implicit| ,implicit)))
-
-;POST 	/session/:sessionId/timeouts
-(defun set-timeouts (session &key implicit)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/timeouts")
-    (generate-content-of-timeouts
-      :implicit implicit)))
-
-;GET 	/session/:sessionId/title
+; HTTP Command:  GET
+; Path:         /session/:sessionId/title
+; This function is not yet implemented.
 (defun get-title (session)
   (send-command
     session
     :get
     ((session-data-base session) "/title")))
 
-;POST 	/session/:sessionId/touch/click
+; HTTP Command:  POST
+; Path:         /session/:sessionId/touch/click
+; This function is not yet implemented.
 (defun touch-click (session)
   (send-command
     session
     :post
     ((session-data-base session) "/touch/click")))
 
-;POST 	/session/:sessionId/touch/doubleclick
+; HTTP Command:  POST
+; Path:         /session/:sessionId/touch/doubleclick
+; This function is not yet implemented.
 (defun touch-doubleclick (session)
   (send-command
     session
     :post
     ((session-data-base session) "/touch/doubleclick")))
 
-;POST 	/session/:sessionId/touch/down
+; HTTP Command:  POST
+; Path:         /session/:sessionId/touch/down
+; This function is not yet implemented.
 (defun touch-down (session)
   (send-command
     session
     :post
     ((session-data-base session) "/touch/down")))
 
-;POST 	/session/:sessionId/touch/flick
+; HTTP Command:  POST
+; Path:         /session/:sessionId/touch/flick
+; This function is not yet implemented.
 (defun touch-flick (session)
   (send-command
     session
     :post
     ((session-data-base session) "/touch/flick")))
 
-;POST 	/session/:sessionId/touch/longclick
+; HTTP Command:  POST
+; Path:         /session/:sessionId/touch/longclick
+; This function is not yet implemented.
 (defun touch-longclick (session)
   (send-command
     session
     :post
     ((session-data-base session) "/touch/longclick")))
 
-;POST 	/session/:sessionId/touch/move
+; HTTP Command:  POST
+; Path:         /session/:sessionId/touch/move
+; This function is not yet implemented.
 (defun touch-move (session)
   (send-command
     session
     :post
     ((session-data-base session) "/touch/move")))
 
-;POST 	/session/:sessionId/touch/scroll
+; HTTP Command:  POST
+; Path:         /session/:sessionId/touch/scroll
+; This function is not yet implemented.
 (defun touch-scroll (session)
   (send-command
     session
     :post
     ((session-data-base session) "/touch/scroll")))
 
-;POST 	/session/:sessionId/touch/up
+; HTTP Command:  POST
+; Path:         /session/:sessionId/touch/up
+; This function is not yet implemented.
 (defun touch-up (session)
   (send-command
     session
     :post
     ((session-data-base session) "/touch/up")))
 
-;DELETE 	/session/:sessionId/window
-(defun close-window (session)
-  (send-command
-    session
-    :delete
-    ((session-data-base session) "/window")))
-
-;POST 	/session/:sessionId/window
+; HTTP Command:  POST
+; Path:         /session/:sessionId/window
+; This function is not yet implemented.
 (defun switch-to-window (session)
   (send-command
     session
     :post
     ((session-data-base session) "/window")))
 
-;POST 	/session/:sessionId/window/maximize
+; HTTP Command:  POST
+; Path:         /session/:sessionId/window/maximize
+; This function is not yet implemented.
 (defun maximize-window (session)
   (send-command
     session
     :post
     ((session-data-base session) "/window/maximize")))
 
-(declaim (inline generate-content-of-window-size))
-(defun generate-content-of-window-size (width height)
-  (jonathan:to-json `(:|height| ,height :|width| ,width)))
-
-;POST 	/session/:sessionId/window/size
-(defun set-window-size (session width height)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/window/size")
-    (generate-content-of-window-size width height)))
-
-;GET 	/session/:sessionId/window/size
-(defun get-window-size (session)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/window/size")))
-
-;POST 	/session/:sessionId/window/:windowHandle/size
-(defun set-window-size-with-window-handle (session window-handle width height)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/window/" window-handle "/size")
-    (generate-content-of-window-size width height)))
-
-;GET 	/session/:sessionId/window/:windowHandle/size
-(defun get-window-size-with-window-handle (session window-handle)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/window/" window-handle "/size")))
-
-(declaim (inline generate-content-of-window-position))
-(defun generate-content-of-window-position (x y)
-  (jonathan:to-json `(:|x| ,x :|y| ,y)))
-
-;POST 	/session/:sessionId/window/:windowHandle/position
-(defun set-window-position-with-window-handle (session window-handle x y)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/window/" window-handle "/position")
-    (generate-content-of-window-position x y)))
-
-;GET 	/session/:sessionId/window/:windowHandle/position
-(defun get-window-position-with-window-handle (session window-handle)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/window/" window-handle "/position")))
-
-;POST 	/session/:sessionId/window/:windowHandle/maximize
+; HTTP Command: POST
+; Path:         /session/:sessionId/window/:windowHandle/maximize
+; This function is not yet implemented.
 (defun window-maximize-with-window-handle (session window-handle)
   (send-command
     session
     :post
     ((session-data-base session) "/window/" window-handle "/maximize")))
-
-;GET 	/session/:sessionId/window_handle
-(defun get-window-handle (session)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/window_handle")))
-
-;GET 	/session/:sessionId/window_handles
-(defun get-window-handles (session)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/window_handles")))
 
