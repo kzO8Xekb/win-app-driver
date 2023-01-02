@@ -624,6 +624,8 @@
                                  (win-app-driver::get-value $json)
                                  *base64-regex*)))
 
+    ; ToDo take-element-screenshot.
+
     (subtest "Testing orientation."
              (test-api
                (funcall
@@ -645,6 +647,42 @@
                :value          (is
                                  (win-app-driver::get-value $json)
                                  "LANDSCAPE")))
+
+    (subtest "Testing get-source."
+               (test-api
+                 (funcall
+                   notepad-session
+                   :get-source)
+                 :content-length (write-to-string
+                                   (+ 1252 (length (win-app-driver::get-value $json))))
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/source")
+                 :app            (ok
+                                   (win-app-driver::get-value $json))
+                 :platform-name  (ok
+                                   (win-app-driver::get-value $json))
+                 :value          (ok
+                                   (win-app-driver::get-value $json))))
+
+    (subtest "Testing get-title."
+               (test-api
+                 (funcall
+                   notepad-session
+                   :get-title)
+                 :content-length (write-to-string
+                                   (+ 92 (length (win-app-driver::get-value $json))))
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/title")
+                 :app            (ok
+                                   (win-app-driver::get-value $json))
+                 :platform-name  (ok
+                                   (win-app-driver::get-value $json))
+                 :value          (ok
+                                   (win-app-driver::get-value $json))))
 
     (subtest "Testing close-window."
              (test-api

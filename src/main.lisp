@@ -223,7 +223,6 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     width,         integer, This argument should specify the new width value.
     height,        integer, This argument should specify the new height value.
   :status
-  :switch-to-window
   :take-element-screenshot
   :take-screenshot
   :touch-click
@@ -431,9 +430,6 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:close-window () 
                                 (return-win-app-driver-server-response 
                                   (close-window session)))
-                 (:switch-to-window () 
-                                    (return-win-app-driver-server-response 
-                                      (switch-to-window session)))
                  (:maximize-window () 
                                    (return-win-app-driver-server-response 
                                      (maximize-window session)))

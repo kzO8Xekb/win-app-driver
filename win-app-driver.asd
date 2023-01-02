@@ -21,7 +21,7 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.1.16"
+           :version "0.1.17"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("alexandria"
@@ -43,10 +43,13 @@
                                             (:file "client")
                                             (:file "element"       :depends-on ("client"))
                                             (:file "keys"          :depends-on ("client"))
+                                            (:file "orientation"   :depends-on ("client"))
                                             (:file "screenshot"    :depends-on ("client"))
                                             (:file "session"       :depends-on ("client"))
+                                            (:file "source"        :depends-on ("client"))
                                             (:file "status"        :depends-on ("client"))
                                             (:file "timeouts"      :depends-on ("client"))
+                                            (:file "title"         :depends-on ("client"))
                                             (:file "window"        :depends-on ("client"))
                                             (:file "window-handle" :depends-on ("client"))))
                                   (:module "conditions"

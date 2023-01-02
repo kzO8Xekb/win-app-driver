@@ -120,24 +120,6 @@
     :post
     ((session-data-base session) "/moveto")))
 
-; HTTP Command:  GET
-; Path:         /session/:sessionId/source
-; This function is not yet implemented.
-(defun get-source (session)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/source")))
-
-; HTTP Command:  GET
-; Path:         /session/:sessionId/title
-; This function is not yet implemented.
-(defun get-title (session)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/title")))
-
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/click
 ; This function is not yet implemented.
@@ -209,13 +191,4 @@
     session
     :post
     ((session-data-base session) "/touch/up")))
-
-; HTTP Command:  POST
-; Path:         /session/:sessionId/window
-; This function is not yet implemented.
-(defun switch-to-window (session)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/window")))
 

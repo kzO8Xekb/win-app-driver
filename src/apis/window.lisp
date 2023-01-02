@@ -36,15 +36,6 @@
     :delete
     ((session-data-base session) "/window")))
 
-; POST 	/session/:sessionId/window
-; This function is not yet implemented. It is temporarily stored in "api.lisp".
-; Uncomment it after implementation and testing.
-;(defun switch-to-window (session)
-;  (send-command
-;    session
-;    :post
-;    ((session-data-base session) "/window")))
-
 ; Maximize Window
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/window/maximize
