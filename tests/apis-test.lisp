@@ -25,8 +25,10 @@
 
 ;; NOTE: To run this test file, execute `(asdf:test-system :win-app-driver)' in your Lisp.
 
-(defparameter *session-id-regex* "[0-9A-F]{1,8}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,12}")
-(defparameter *window-handle-regex* "^0x[0-9A-F]{1,8}$")
+(defparameter *find-element-value-regex* "^\{\"ELEMENT\":\"[0-9]+\.[0-9]+\"\}$")
+(defparameter *session-id-regex*         "[0-9A-F]{1,8}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,12}")
+(defparameter *window-handle-regex*      "0x[0-9A-F]{1,8}")
+(defparameter *base64-regex*             "^[A-Za-z0-9\/\+]+=*$")
 
 (lol:defmacro! test-api (test-code
                           &key
@@ -45,7 +47,10 @@
                           (protcol          "http")
                           (host             *win-app-driver-host*)
                           (port             *win-app-driver-port*)
-                          (path             ""))
+                          (path             "")
+                          (value            `(is
+                                               (win-app-driver::get-value $json)
+                                               nil)))
                `(multiple-value-bind
                   ($json $code $hash $quri)
                   ,test-code
@@ -70,7 +75,7 @@
                       '(,content-type t))
                     (is-values
                       (gethash "content-length" $hash)
-                      '(,content-length t))
+                      `(,,content-length t))
                     (is
                       (quri:uri-scheme $quri)
                       ,protcol)
@@ -82,7 +87,8 @@
                       ,port)
                     (is
                       (quri:uri-path $quri)
-                      ,path))))
+                      ,path)
+                    ,value)))
 ;(multiple-value-bind
 ;  ($0 $1 $2 $3)
 ;  (funcall notepad-session
@@ -165,7 +171,10 @@
                                  :|platformName|)
                                "Windows")
              :path           "/session"
-             :content-length "138")
+             :content-length "138"
+             :value          (is
+                               (win-app-driver::get-value $json)
+                               `(:|platformName| "Windows" :|app| "C:/Windows/System32/notepad.exe")))
 
            (setf base (win-app-driver::session-data-base
                         (funcall
@@ -250,7 +259,11 @@
              :path           (concatenate
                                'string
                                base
-                               "/element")))
+                               "/element")
+             :value         (like
+                              (jonathan:to-json
+                                (win-app-driver::get-value $json))
+                              *find-element-value-regex*)))
   (let*
     ((response (funcall
                  notepad-session
@@ -309,7 +322,9 @@
                  :get-window-handle)
                :app            (like
                                  (win-app-driver::get-value $json)
-                                 *window-handle-regex*)
+                                 (concatenate
+                                   'string
+                                   "^" *window-handle-regex* "$"))
                :content-length "84"
                :path           (concatenate
                                  'string
@@ -317,7 +332,14 @@
                                  "/window_handle")
                :platform-name  (like
                                  (win-app-driver::get-value $json)
-                                 *window-handle-regex*)))
+                                 (concatenate
+                                   'string
+                                   "^" *window-handle-regex* "$"))
+               :value          (like
+                                 (win-app-driver::get-value $json)
+                                 (concatenate
+                                   'string
+                                   "^" *window-handle-regex* "$"))))
 
     (subtest "Testing get-window-handles."
              (test-api
@@ -326,7 +348,9 @@
                  :get-window-handles)
                :app            (like
                                  (first (win-app-driver::get-value $json))
-                                 *window-handle-regex*)
+                                 (concatenate
+                                   'string
+                                   "^" *window-handle-regex* "$"))
                :content-length "86"
                :path           (concatenate
                                  'string
@@ -334,7 +358,22 @@
                                  "/window_handles")
                :platform-name  (like
                                  (first (win-app-driver::get-value $json))
-                                 *window-handle-regex*)))
+                                 (concatenate
+                                   'string
+                                   "^" *window-handle-regex* "$"))
+               :value          (like
+                                 (jonathan:to-json
+                                   (win-app-driver::get-value $json))
+                                 (concatenate
+                                   'string
+                                   "^\\["
+                                   "(\\\""
+                                   *window-handle-regex*
+                                   "\\\")?"
+                                   "(\,\\\""
+                                   *window-handle-regex*
+                                   "\\\")*"
+                                   "\\]$"))))
 
     (subtest "Testing get-window-size."
              (test-api
@@ -345,7 +384,11 @@
                :path           (concatenate
                                  'string
                                  base
-                                 "/window/size")))
+                                 "/window/size")
+               :value          (like
+                                 (jonathan:to-json
+                                   (win-app-driver::get-value $json))
+                                 "\{\"width\":[0-9]+,\"height\":[0-9]+\}")))
 
     ;; Testing window size.
     (subtest "Testing generate-content-of-window-size."
@@ -362,9 +405,9 @@
        (after-width 0)
        (after-height 0)
        (handle (win-app-driver::get-value
-                          (funcall
-                            notepad-session
-                            :get-window-handle))))
+                 (funcall
+                   notepad-session
+                   :get-window-handle))))
       (subtest "Testing set-window-size."
                (test-api
                  (funcall
@@ -387,7 +430,7 @@
                (is
                  (getf (win-app-driver::get-value response) :|height|)
                  456))
-      
+
       (funcall
         notepad-session
         :set-window-size
@@ -480,9 +523,9 @@
       )
 
     (subtest "Testing generate-content-of-window-position."
-         (is
-           (win-app-driver::generate-content-of-window-position 123 456)
-           "{\"x\":123,\"y\":456}"))
+             (is
+               (win-app-driver::generate-content-of-window-position 123 456)
+               "{\"x\":123,\"y\":456}"))
 
     (subtest "Testing get-window-position-with-window-handle."
              (let
@@ -501,7 +544,11 @@
                                    base
                                    "/window/"
                                    handle
-                                   "/position"))))
+                                   "/position")
+                 :value          (like
+                                   (jonathan:to-json
+                                     (win-app-driver::get-value $json))
+                                   "\{\"y\":[0-9]+,\"x\":[0-9]+\}"))))
 
     (let*
       ((handle (win-app-driver::get-value
@@ -548,6 +595,30 @@
         y)
 
       )
+
+    ; Test screenshots.
+    ; The return value of the screenshot is Base64-encoded text data in png format.
+    ; The image can be viewed by decoding it using a package such as cl-base64.
+    (subtest "Testing take-screenshot."
+             (test-api
+               (funcall
+                 notepad-session
+                 :take-screenshot)
+               :content-length (write-to-string
+                                 (+ 74 (length (win-app-driver::get-value $json))))
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/screenshot")
+               :app            (like
+                                 (win-app-driver::get-value $json)
+                                 *base64-regex*)
+               :platform-name  (like
+                                 (win-app-driver::get-value $json)
+                                 *base64-regex*)
+               :value          (like
+                                 (win-app-driver::get-value $json)
+                                 *base64-regex*)))
 
     (subtest "Testing close-window."
              (test-api

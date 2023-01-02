@@ -130,15 +130,6 @@
     ((session-data-base session) "/orientation")))
 
 ; HTTP Command:  GET
-; Path:         /session/:sessionId/screenshot
-; This function is not yet implemented.
-(defun take-screenshot (session)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/screenshot")))
-
-; HTTP Command:  GET
 ; Path:         /session/:sessionId/source
 ; This function is not yet implemented.
 (defun get-source (session)
