@@ -255,7 +255,11 @@
                notepad-session
                :find-element
                :class-name "RichEditD2DPT")
-             :content-length "96"
+             :content-length (write-to-string
+                                 (+ 72
+                                    (length
+                                      (jonathan:to-json
+                                        (win-app-driver::get-value $json)))))
              :path           (concatenate
                                'string
                                base
@@ -619,6 +623,28 @@
                :value          (like
                                  (win-app-driver::get-value $json)
                                  *base64-regex*)))
+
+    (subtest "Testing orientation."
+             (test-api
+               (funcall
+                 notepad-session
+                 :orientation)
+               :content-length "83"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/orientation")
+               ; The return value depends on the environment.
+               ; Essentially, various environment values should be set and tested.
+               :app            (is
+                                 (win-app-driver::get-value $json)
+                                 "LANDSCAPE")
+               :platform-name  (is
+                                 (win-app-driver::get-value $json)
+                                 "LANDSCAPE")
+               :value          (is
+                                 (win-app-driver::get-value $json)
+                                 "LANDSCAPE")))
 
     (subtest "Testing close-window."
              (test-api

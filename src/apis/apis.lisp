@@ -121,15 +121,6 @@
     ((session-data-base session) "/moveto")))
 
 ; HTTP Command:  GET
-; Path:         /session/:sessionId/orientation
-; This function is not yet implemented.
-(defun orientation (session)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/orientation")))
-
-; HTTP Command:  GET
 ; Path:         /session/:sessionId/source
 ; This function is not yet implemented.
 (defun get-source (session)
