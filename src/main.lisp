@@ -130,7 +130,7 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                         :xpath-selector            finding element xpath.
                         :xpath                     finding element xpath.
     value,    string, This argument should be a string to identify the element.
-  :find-element-from-elements
+  :find-elements-from-element
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
     selector, symbol, This argument specify how to search for element IDs.
                         Selector                   Description
@@ -339,9 +339,9 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:find-element-from-element (element-id selector value) 
                                              (return-win-app-driver-server-response 
                                                (find-element-from-element session element-id selector value)))
-                 (:find-element-from-elements (element-id selector value) 
+                 (:find-elements-from-element (element-id selector value) 
                                               (return-win-app-driver-server-response 
-                                                (find-element-from-elements session element-id selector value)))
+                                                (find-elements-from-element session element-id selector value)))
                  (:is-element-enabled (element-id) 
                                       (return-win-app-driver-server-response 
                                         (is-element-enabled session element-id)))

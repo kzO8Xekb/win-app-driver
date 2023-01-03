@@ -25,10 +25,11 @@
 
 ;; NOTE: To run this test file, execute `(asdf:test-system :win-app-driver)' in your Lisp.
 
-(defparameter *find-element-value-regex* "^\{\"ELEMENT\":\"[0-9]+\.[0-9]+\"\}$")
-(defparameter *session-id-regex*         "[0-9A-F]{1,8}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,12}")
-(defparameter *window-handle-regex*      "0x[0-9A-F]{1,8}")
-(defparameter *base64-regex*             "^[A-Za-z0-9\/\+]+=*$")
+(defparameter *find-element-value-regex*  "^\{\"ELEMENT\":\"[0-9\.\-]+\"\}$")
+(defparameter *find-elements-value-regex* "^\\\[(\\\{\"ELEMENT\":\"[0-9\.\-]+\"\\\})?(,\\\{\"ELEMENT\":\"[0-9\.\-]+\"\\\})*\\\]$")
+(defparameter *session-id-regex*          "[0-9A-F]{1,8}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,4}\-[0-9A-F]{1,12}")
+(defparameter *window-handle-regex*       "0x[0-9A-F]{1,8}")
+(defparameter *base64-regex*              "^[A-Za-z0-9\/\+]+=*$")
 
 (lol:defmacro! test-api (test-code
                           &key
@@ -237,29 +238,18 @@
                    :pandoric-get
                    'win-app-driver::session)))))
 
+  ; Find Element
   (subtest "Testing find-element."
-           ;(test-api
-           ;  (funcall
-           ;    notepad-session
-           ;    :find-element
-           ;    :name "Text editor")
-           ;  :app            nil
-           ;  :platform-name  nil
-           ;  :content-length "96"
-           ;  :path           (concatenate
-           ;                    'string
-           ;                    base
-           ;                    "/element"))
            (test-api
              (funcall
                notepad-session
                :find-element
                :class-name "RichEditD2DPT")
              :content-length (write-to-string
-                                 (+ 72
-                                    (length
-                                      (jonathan:to-json
-                                        (win-app-driver::get-value $json)))))
+                               (+ 72
+                                  (length
+                                    (jonathan:to-json
+                                      (win-app-driver::get-value $json)))))
              :path           (concatenate
                                'string
                                base
@@ -268,6 +258,104 @@
                               (jonathan:to-json
                                 (win-app-driver::get-value $json))
                               *find-element-value-regex*)))
+
+  (subtest "Testing find-elements."
+           (test-api
+             (funcall
+               notepad-session
+               :find-elements
+               :class-name
+               "Microsoft.UI.Xaml.Controls.MenuBarItem")
+             :content-length (write-to-string
+                               (+ 72
+                                  (length
+                                    (jonathan:to-json
+                                      (win-app-driver::get-value $json)))))
+             :path           (concatenate
+                               'string
+                               base
+                               "/elements")
+             :app           (ok
+                              (win-app-driver::get-value $json))
+             :platform-name (ok
+                              (win-app-driver::get-value $json))
+             :value         (like
+                              (jonathan:to-json
+                                (win-app-driver::get-value $json))
+                              *find-elements-value-regex*)))
+
+  (subtest "Testing find-element-from-element."
+           (let
+             ((element-id (getf
+                            (win-app-driver::get-value
+                              (funcall
+                                notepad-session
+                                :find-element
+                                :automation-id
+                                "MenuBar"))
+                            :|ELEMENT|)))
+             (test-api
+               (funcall
+                 notepad-session
+                 :find-element-from-element
+                 element-id
+                 :class-name
+                 "Microsoft.UI.Xaml.Controls.MenuBarItem")
+               :content-length (write-to-string
+                                 (+ 72
+                                    (length
+                                      (jonathan:to-json
+                                        (win-app-driver::get-value $json)))))
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/element")
+               :value         (like
+                                (jonathan:to-json
+                                  (win-app-driver::get-value $json))
+                                *find-element-value-regex*))))
+
+  (subtest "Testing find-elements-from-element."
+           (let
+             ((element-id (getf
+                            (win-app-driver::get-value
+                              (funcall
+                                notepad-session
+                                :find-element
+                                :automation-id
+                                "MenuBar"))
+                            :|ELEMENT|)))
+
+             (test-api
+               (funcall
+                 notepad-session
+                 :find-elements-from-element
+                 element-id
+                 :class-name
+                 "Microsoft.UI.Xaml.Controls.MenuBarItem")
+               :content-length (write-to-string
+                                 (+ 72
+                                    (length
+                                      (jonathan:to-json
+                                        (win-app-driver::get-value $json)))))
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/elements")
+               :app           (ok
+                                (win-app-driver::get-value $json))
+               :platform-name (ok
+                                (win-app-driver::get-value $json))
+               :value         (like
+                                (jonathan:to-json
+                                  (win-app-driver::get-value $json))
+                                *find-elements-value-regex*))))
+
+  ; Element Manipulation
   (let*
     ((response (funcall
                  notepad-session

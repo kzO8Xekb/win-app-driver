@@ -157,26 +157,24 @@
     ((session-data-base session) "/element/" element-id "/displayed")))
 
 ; Find Element from Element
-; HTTP Command: GET
+; HTTP Command: POST
 ; Path:         /session/:sessionId/element/:id/element
-; This function is not yet implemented.
 (defun find-element-from-element (session element-id selector value)
   (send-command
     session
-    :get
+    :post
     ((session-data-base session) "/element/" element-id "/element")
     (generate-find-element-json-string
       selector
       value)))
 
-; Find Element from Elements
-; HTTP Command: GET
+; Find Elements from Element
+; HTTP Command: POST
 ; Path:         /session/:sessionId/element/:id/elements
-; This function is not yet implemented.
-(defun find-element-from-elements (session element-id selector value)
+(defun find-elements-from-element (session element-id selector value)
   (send-command
     session
-    :get
+    :post
     ((session-data-base session) "/element/" element-id "/elements")
     (generate-find-element-json-string
       selector
