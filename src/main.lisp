@@ -333,9 +333,9 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:element-click (element-id) 
                                  (return-win-app-driver-server-response 
                                    (element-click session element-id)))
-                 (:element-displayed (element-id) 
+                 (:is-element-displayed (element-id) 
                                      (return-win-app-driver-server-response 
-                                       (element-displayed session element-id)))
+                                       (is-element-displayed session element-id)))
                  (:find-element-from-element (element-id selector value) 
                                              (return-win-app-driver-server-response 
                                                (find-element-from-element session element-id selector value)))

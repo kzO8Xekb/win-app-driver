@@ -402,6 +402,45 @@
                                  (win-app-driver::get-value $json)
                                  "ControlType.Document")))
 
+    (subtest "Testing active-element."
+             (test-api
+               (funcall
+                 notepad-session
+                 :active-element)
+               :content-length (write-to-string
+                                 (+ 72
+                                    (length
+                                      (jonathan:to-json
+                                        (win-app-driver::get-value $json)))))
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/active")
+               :value          (like
+                                 (jonathan:to-json
+                                   (win-app-driver::get-value $json))
+                                 *find-element-value-regex*)))
+
+    (subtest "Testing is-element-displayed."
+             (test-api
+               (funcall
+                 notepad-session
+                 :is-element-displayed
+                 element-id)
+               :content-length "76"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/displayed")
+               :app            (ok
+                                 (win-app-driver::get-value $json))
+               :platform-name  (ok
+                                 (win-app-driver::get-value $json))
+               :value          (ok
+                                 (win-app-driver::get-value $json))))
+
     (subtest "Testing get-element-size."
              (test-api
                (funcall

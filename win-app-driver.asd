@@ -21,7 +21,7 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.1.19"
+           :version "0.1.20"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("alexandria"
