@@ -284,16 +284,16 @@
                                 (win-app-driver::get-value $json))
                               *find-elements-value-regex*)))
 
-  (subtest "Testing find-element-from-element."
-           (let
-             ((element-id (getf
-                            (win-app-driver::get-value
-                              (funcall
-                                notepad-session
-                                :find-element
-                                :automation-id
-                                "MenuBar"))
-                            :|ELEMENT|)))
+  (let
+    ((element-id (getf
+                   (win-app-driver::get-value
+                     (funcall
+                       notepad-session
+                       :find-element
+                       :automation-id
+                       "MenuBar"))
+                   :|ELEMENT|)))
+    (subtest "Testing find-element-from-element."
              (test-api
                (funcall
                  notepad-session
@@ -315,19 +315,9 @@
                :value         (like
                                 (jonathan:to-json
                                   (win-app-driver::get-value $json))
-                                *find-element-value-regex*))))
+                                *find-element-value-regex*)))
 
-  (subtest "Testing find-elements-from-element."
-           (let
-             ((element-id (getf
-                            (win-app-driver::get-value
-                              (funcall
-                                notepad-session
-                                :find-element
-                                :automation-id
-                                "MenuBar"))
-                            :|ELEMENT|)))
-
+    (subtest "Testing find-elements-from-element."
              (test-api
                (funcall
                  notepad-session
@@ -388,6 +378,80 @@
                                  'string
                                  base
                                  "/keys")))
+
+    (subtest "Testing get-element-name."
+             (test-api
+               (funcall
+                 notepad-session
+                 :get-element-name
+                 element-id)
+               :content-length "94"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/name")
+               :app            (is
+                                 (win-app-driver::get-value $json)
+                                 "ControlType.Document")
+               :platform-name  (is
+                                 (win-app-driver::get-value $json)
+                                 "ControlType.Document")
+               :value          (is
+                                 (win-app-driver::get-value $json)
+                                 "ControlType.Document")))
+
+    (subtest "Testing get-element-size."
+             (test-api
+               (funcall
+                 notepad-session
+                 :get-element-size
+                 element-id)
+               :content-length "99"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/size")
+               :value          (is
+                                 (win-app-driver::get-value $json)
+                                 `(:|width| 1147 :|height| 571))))
+
+    (subtest "Testing get-element-locaion."
+             (test-api
+               (funcall
+                 notepad-session
+                 :get-element-location
+                 element-id)
+               :content-length "86"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/location")
+               :value          (is
+                                 (win-app-driver::get-value $json)
+                                 `(:|y| 90 :|x| 0))))
+
+    (subtest "Testing get-element-location-in-view."
+             (test-api
+               (funcall
+                 notepad-session
+                 :get-element-location-in-view
+                 element-id)
+               :content-length "86"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/location_in_view")
+               :value          (is
+                                 (win-app-driver::get-value $json)
+                                 `(:|y| 90 :|x| 0))))
 
     (subtest "Testing generate-content-of-window-size."
              (is
