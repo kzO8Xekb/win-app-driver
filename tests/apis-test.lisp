@@ -379,6 +379,40 @@
                                  base
                                  "/keys")))
 
+    (subtest "Testing element-clear."
+             (test-api
+               (funcall
+                 notepad-session
+                 :element-clear
+                 element-id)
+               :content-length "63"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/clear")))
+
+    (subtest "Testing element-send-string."
+             (test-api
+               (funcall
+                 notepad-session
+                 :element-send-string
+                 element-id
+                 :control
+                 "a"
+                 :control
+                 :delete
+                 "Hello, World!"
+                 :enter)
+               :content-length "63"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/value")))
+
     (subtest "Testing get-element-name."
              (test-api
                (funcall
@@ -440,6 +474,34 @@
                                  (win-app-driver::get-value $json))
                :value          (ok
                                  (win-app-driver::get-value $json))))
+
+    (subtest "Testing get-element-attribute."
+             (test-api
+               (funcall
+                 notepad-session
+                 :get-element-attribute
+                 element-id
+                 "FrameworkId")
+               :content-length (write-to-string
+                                 (+ 72
+                                    (length
+                                      (jonathan:to-json
+                                        (win-app-driver::get-value $json)))))
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/attribute/FrameworkId")
+               :app            (is
+                                 (win-app-driver::get-value $json)
+                                 "Win32")
+               :platform-name  (is
+                                 (win-app-driver::get-value $json)
+                                 "Win32")
+               :value          (is
+                                 (win-app-driver::get-value $json)
+                                 "Win32")))
 
     (subtest "Testing get-element-size."
              (test-api

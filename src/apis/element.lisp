@@ -230,16 +230,6 @@
     :get
     ((session-data-base session) "/element/" element-id "/name")))
 
-; Take Element Screenshot
-; HTTP Command: GET
-; Path:         /session/:sessionId/element/:id/screenshot
-; This function is not yet implemented.
-(defun take-element-screenshot (session element-id)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/element/" element-id "/screenshot")))
-
 ; Is Element Selected
 ; HTTP Command: GET
 ; Path:         /session/:sessionId/element/:id/selected
@@ -268,14 +258,4 @@
     session
     :get
     ((session-data-base session) "/element/" element-id "/text")))
-
-; Get Element Value
-; HTTP Command: POST
-; Path:         /session/:sessionId/element/:id/value
-; This function is not yet implemented.
-(defun get-element-value (session element-id)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/element/" element-id "/value")))
 

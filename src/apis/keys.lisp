@@ -35,6 +35,7 @@
       :enter       "\"\\ue007\""
       :shift       "\"\\ue008\""
       :control     "\"\\ue009\""
+      :ctrl        "\"\\ue009\""
       :alt         "\"\\ue00a\""
       :pause       "\"\\ue00b\""
       :escape      "\"\\ue00c\""
@@ -104,7 +105,9 @@
                     (setf result (concatenate 'string result "," (character-to-key itr))))))
       (concatenate 'string result "]"))))
 
-;POST 	/session/:sessionId/keys
+; Send Keys
+; HTTP Command: POST
+; Path:         /session/:sessionId/keys
 (defun send-keys (session keys)
   (let
     ((val (concatenate
@@ -118,16 +121,49 @@
       ((session-data-base session) "/keys")
       val)))
 
+; Send String
 (defun send-string (session &rest strings)
   (flet
     ((convert-keys (itr)
                    (if (stringp itr)
                      (concatenate 'list itr)
                      (list itr))))
-  (send-keys
-    session
-    (alexandria:flatten
-      (mapcar
-        #'convert-keys
-        strings)))))
+    (send-keys
+      session
+      (alexandria:flatten
+        (mapcar
+          #'convert-keys
+          strings)))))
+
+; Element Send Keys
+; HTTP Command: POST
+; Path:         /session/:sessionId/element/:id/value
+; see https://www.w3.org/TR/webdriver/#element-send-keys
+(defun element-send-keys (session element-id keys)
+  (let
+    ((val (concatenate
+            'string
+            "{\"value\":"
+            (converte-key-list-to-json-value-string keys)
+            "}")))
+    (send-command
+      session
+      :post
+      ((session-data-base session) "/element/" element-id "/value")
+      val)))
+
+; Element Send String
+(defun element-send-string (session element-id &rest string)
+  (flet
+    ((convert-keys (itr)
+                   (if (stringp itr)
+                     (concatenate 'list itr)
+                     (list itr))))
+    (element-send-keys
+      session
+      element-id
+      (alexandria:flatten
+        (mapcar
+          #'convert-keys
+          string)))))
 

@@ -101,6 +101,12 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
   :element-equals
     element-id, string, This argument should specify the element ID of the element to be investigated.
+  :element-send-keys
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+    keys, list, List of keyboard actions to be sent to the WinAppDriver server. For more information on keyboard actions, see \"https://www.w3.org/TR/webdriver1/#keyboard-actions\".
+  :element-send-string (out of specification command)
+    element-id, string                , This argument should specify the element ID of the element you wish to operate on.
+    string,     [rest]string or symbol, Specify the string or symbol of keyboard action you want to send to the WinAppDriver server.
   :find-element
     selector, symbol, This argument specify how to search for element ID.
                         Selector                   Description
@@ -173,8 +179,6 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
   :get-element-text
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
-  :get-element-value
-    element-id, string, This argument should specify the element ID of the element you wish to operate on.
   :get-sessions
   :get-source
   :get-title
@@ -207,8 +211,8 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
   :orientation
   :send-keys
     keys, list, List of keyboard actions to be sent to the WinAppDriver server. For more information on keyboard actions, see \"https://www.w3.org/TR/webdriver1/#keyboard-actions\".
-  :send-string
-    string, [rest]string, (Out of specification function)Specify the string you want to send to the WinAppDriver server.
+  :send-string (out of specification command)
+    string, [rest]string, Specify the string or symbol of keyboard action you want to send to the WinAppDriver server.
   :set-timeouts
     implicit, [key]integer, This argument should specify the new implicit wait timeout.
   :set-window-position-with-window-handle
@@ -369,16 +373,19 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:get-element-text (element-id) 
                                     (return-win-app-driver-server-response 
                                       (get-element-text session element-id)))
-                 (:get-element-value (element-id) 
+                 (:element-send-keys (element-id keys)  ; https://www.w3.org/TR/webdriver/#element-send-keys
                                      (return-win-app-driver-server-response 
-                                       (get-element-value session element-id)))
+                                       (element-send-keys session element-id keys)))
+                 (:element-send-string (element-id &rest string) ; non-specific function.
+                                     (return-win-app-driver-server-response 
+                                       (element-send-string session element-id string)))
                  (:forward () 
                            (return-win-app-driver-server-response 
                              (forward session)))
                  (:send-keys (keys)
                              (return-win-app-driver-server-response 
                                (send-keys session keys)))
-                 (:send-string (&rest string) ; 仕様外関数
+                 (:send-string (&rest string) ; non-specific function.
                                (return-win-app-driver-server-response 
                                  (send-string session string)))
                  (:location () 
