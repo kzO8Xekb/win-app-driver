@@ -455,6 +455,26 @@
                                    (win-app-driver::get-value $json))
                                  *find-element-value-regex*)))
 
+    (subtest "Testing is-element-enabled."
+             (test-api
+               (funcall
+                 notepad-session
+                 :is-element-enabled
+                 element-id)
+               :content-length "76"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/enabled")
+               :app            (ok
+                                 (win-app-driver::get-value $json))
+               :platform-name  (ok
+                                 (win-app-driver::get-value $json))
+               :value          (ok
+                                 (win-app-driver::get-value $json))))
+
     (subtest "Testing is-element-displayed."
              (test-api
                (funcall
