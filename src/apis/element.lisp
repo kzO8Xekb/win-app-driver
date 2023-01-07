@@ -194,11 +194,11 @@
 ; HTTP Command: GET
 ; Path:         /session/:sessionId/element/:id/equals
 ; This function is not yet implemented.
-(defun element-equals (session element-id)
+(defun element-equals (session element-id1 element-id2)
   (send-command
     session
     :get
-    ((session-data-base session) "/element/" element-id "/equals")))
+    ((session-data-base session) "/element/" element-id1 "/equals/" element-id2)))
 
 ; Get Element Location
 ; HTTP Command: GET

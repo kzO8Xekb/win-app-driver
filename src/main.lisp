@@ -100,7 +100,8 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
   :element-click
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
   :element-equals
-    element-id, string, This argument should specify the element ID of the element to be investigated.
+    element-id1, string, Specify the element ID to be investigated in this argument.
+    element-id2, string, Specify the element ID to be compared for this argument.
   :element-send-keys
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
     keys, list, List of keyboard actions to be sent to the WinAppDriver server. For more information on keyboard actions, see \"https://www.w3.org/TR/webdriver1/#keyboard-actions\".
@@ -349,9 +350,9 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:is-element-enabled (element-id) 
                                       (return-win-app-driver-server-response 
                                         (is-element-enabled session element-id)))
-                 (:element-equals (element-id) 
+                 (:element-equals (element-id1 element-id2) 
                                   (return-win-app-driver-server-response 
-                                    (element-equals session element-id)))
+                                    (element-equals session element-id1 element-id2)))
                  (:get-element-location (element-id) 
                                         (return-win-app-driver-server-response 
                                           (get-element-location session element-id)))

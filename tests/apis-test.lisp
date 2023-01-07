@@ -495,6 +495,63 @@
                :value          (ok
                                  (win-app-driver::get-value $json))))
 
+    (subtest "Testing is-element-selected."
+             (test-api
+               (funcall
+                 notepad-session
+                 :is-element-selected
+                 element-id)
+               :content-length "77"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/selected")))
+
+    (subtest "Testing element-equals."
+             (test-api
+               (funcall
+                 notepad-session
+                 :element-equals
+                 element-id
+                 element-id)
+               :content-length "76"
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/element/"
+                                 element-id
+                                 "/equals/"
+                                 element-id)
+               :app            (ok
+                                 (win-app-driver::get-value $json))
+               :platform-name  (ok
+                                 (win-app-driver::get-value $json))
+               :value          (ok
+                                 (win-app-driver::get-value $json)))
+
+             (let
+               ((menu-bar-element-id (get-element-id
+                                       (funcall
+                                         notepad-session
+                                         :find-element
+                                         :automation-id "MenuBar"))))
+               (test-api
+                 (funcall
+                   notepad-session
+                   :element-equals
+                   element-id
+                   menu-bar-element-id)
+                 :content-length "77"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/element/"
+                                   element-id
+                                   "/equals/"
+                                   menu-bar-element-id))))
+
     (subtest "Testing get-element-attribute."
              (test-api
                (funcall
