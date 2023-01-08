@@ -22,12 +22,29 @@
 
 (in-package :win-app-driver)
 
-; Get Title
-; HTTP Command:  GET
-; Path:         /session/:sessionId/title
-(defun get-title (session)
+; All functions in this file are unimplemented.
+; Even if it works, it has not been tested.
+
+;; Command Summary
+;; see https://github.com/microsoft/WinAppDriver/blob/master/Docs/SupportedAPIs.md
+; The following is a list of APIs supported by WinAppDriver:
+; HTTP 	Path
+
+; HTTP Command:  POST
+; Path:         /session/:sessionId/appium/app/launch
+; This function is not yet implemented.
+(defun launch-app (session)
   (send-command
     session
-    :get
-    ((session-data-base session) "/title")))
+    :post
+    ((session-data-base session) "/appium/app/launch")))
+
+; HTTP Command:  POST
+; Path:         /session/:sessionId/appium/app/close
+; This function is not yet implemented.
+(defun close-app (session)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/appium/app/close")))
 

@@ -21,7 +21,7 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.1.23"
+           :version "0.1.24"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("alexandria"
@@ -39,19 +39,20 @@
                                   (:module "apis"
                                            :depends-on ("package" "conditions" "utilities")
                                            :components
-                                           ((:file "apis"           :depends-on ("client"))
+                                           ((:file "actions"             :depends-on ("client"))
+                                            (:file "appium"              :depends-on ("client"))
                                             (:file "client")
-                                            (:file "element"        :depends-on ("client"))
-                                            (:file "keys"           :depends-on ("client"))
-                                            (:file "orientation"    :depends-on ("client"))
-                                            (:file "screen-capture" :depends-on ("client"))
-                                            (:file "session"        :depends-on ("client"))
-                                            (:file "source"         :depends-on ("client"))
-                                            (:file "status"         :depends-on ("client"))
-                                            (:file "timeouts"       :depends-on ("client"))
-                                            (:file "title"          :depends-on ("client"))
-                                            (:file "window"         :depends-on ("client"))
-                                            (:file "window-handle"  :depends-on ("client"))))
+                                            (:file "contexts"            :depends-on ("client"))
+                                            (:file "document"            :depends-on ("client"))
+                                            (:file "element-interaction" :depends-on ("client"))
+                                            (:file "element-retrieval"   :depends-on ("client"))
+                                            (:file "element-state"       :depends-on ("client"))
+                                            (:file "navigation"          :depends-on ("client"))
+                                            (:file "orientation"         :depends-on ("client"))
+                                            (:file "screen-capture"      :depends-on ("client"))
+                                            (:file "session"             :depends-on ("client"))
+                                            (:file "status"              :depends-on ("client"))
+                                            (:file "timeouts"            :depends-on ("client"))))
                                   (:module "conditions"
                                            :depends-on ("package" "utilities")
                                            :components
@@ -74,11 +75,13 @@
                                  :components
                                  ((:file "package")
                                   (:file "config")
+                                  (:file "test-util")
                                   (:file "client-test")
                                   (:file "main-test")
                                   (:file "api-element-test")
                                   (:file "api-keys-test")
                                   (:file "apis-test")
+                                  (:file "actions-test")
                                   (:file "finalizer"))))
            :description "This package is WinAppDriver utilities test suite."
            :perform (test-op (op c) (symbol-call :prove :run c)))

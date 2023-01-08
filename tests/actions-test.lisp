@@ -20,28 +20,6 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :win-app-driver)
+(in-package :win-app-driver/tests)
 
-;; Command Summary
-;; see https://github.com/microsoft/WinAppDriver/blob/master/Docs/SupportedAPIs.md
-; The following is a list of APIs supported by WinAppDriver:
-; HTTP 	Path
-
-; Get Window Handle
-; HTTP Command: GET
-; Path:         /session/:sessionId/window_handle
-(defun get-window-handle (session)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/window_handle")))
-
-; Get Window Handles
-; HTTP Command: GET
-; Path:         /session/:sessionId/window_handles
-(defun get-window-handles (session)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/window_handles")))
 

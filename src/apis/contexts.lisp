@@ -120,3 +120,21 @@
     :post
     ((session-data-base session) "/window/" window-handle "/maximize")))
 
+; Get Window Handle
+; HTTP Command: GET
+; Path:         /session/:sessionId/window_handle
+(defun get-window-handle (session)
+  (send-command
+    session
+    :get
+    ((session-data-base session) "/window_handle")))
+
+; Get Window Handles
+; HTTP Command: GET
+; Path:         /session/:sessionId/window_handles
+(defun get-window-handles (session)
+  (send-command
+    session
+    :get
+    ((session-data-base session) "/window_handles")))
+

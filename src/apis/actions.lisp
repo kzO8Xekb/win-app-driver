@@ -31,33 +31,6 @@
 ; HTTP 	Path
 
 ; HTTP Command:  POST
-; Path:         /session/:sessionId/appium/app/launch
-; This function is not yet implemented.
-(defun launch-app (session)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/appium/app/launch")))
-
-; HTTP Command:  POST
-; Path:         /session/:sessionId/appium/app/close
-; This function is not yet implemented.
-(defun close-app (session)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/appium/app/close")))
-
-; HTTP Command:  POST
-; Path:         /session/:sessionId/back
-; This function is not yet implemented.
-(defun back (session)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/back")))
-
-; HTTP Command:  POST
 ; Path:         /session/:sessionId/buttondown
 ; This function is not yet implemented.
 (defun button-down (session)
@@ -92,15 +65,6 @@
     session
     :post
     ((session-data-base session) "/doubleclick")))
-
-; HTTP Command:  POST
-; Path:         /session/:sessionId/forward
-; This function is not yet implemented.
-(defun forward (session)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/forward")))
 
 ; HTTP Command:  GET
 ; Path:         /session/:sessionId/location

@@ -167,3 +167,22 @@
           #'convert-keys
           string)))))
 
+; Element Clear
+; HTTP Command: POST
+; Path:         /session/:sessionId/element/:id/clear
+; This function is not yet implemented.
+(defun element-clear (session element-id)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/element/" element-id "/clear")))
+
+; Element Click
+; HTTP Command: POST
+; Path:         /session/:sessionId/element/:id/click
+(defun element-click (session element-id)
+  (send-command
+    session
+    :post
+    ((session-data-base session) "/element/" element-id "/click")))
+
