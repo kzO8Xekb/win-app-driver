@@ -739,9 +739,9 @@
 
       )
 
-    (subtest "Testing generate-content-of-window-position."
+    (subtest "Testing generate-content-of-position."
              (is
-               (win-app-driver::generate-content-of-window-position 123 456)
+               (win-app-driver::generate-content-of-position 123 456)
                "{\"x\":123,\"y\":456}"))
 
     (subtest "Testing get-window-position-with-window-handle."

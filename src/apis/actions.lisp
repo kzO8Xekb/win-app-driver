@@ -22,9 +22,6 @@
 
 (in-package :win-app-driver)
 
-; All functions in this file are unimplemented.
-; Even if it works, it has not been tested.
-
 ;; Command Summary
 ;; see https://github.com/microsoft/WinAppDriver/blob/master/Docs/SupportedAPIs.md
 ; The following is a list of APIs supported by WinAppDriver:
@@ -33,38 +30,42 @@
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/buttondown
 ; This function is not yet implemented.
-(defun button-down (session)
+(defun button-down (session x y)
   (send-command
     session
     :post
-    ((session-data-base session) "/buttondown")))
+    ((session-data-base session) "/buttondown")
+    (generate-content-of-position x y)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/buttonup
 ; This function is not yet implemented.
-(defun button-up (session)
+(defun button-up (session x y)
   (send-command
     session
     :post
-    ((session-data-base session) "/buttonup")))
+    ((session-data-base session) "/buttonup")
+    (generate-content-of-position x y)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/click
 ; This function is not yet implemented.
-(defun click (session)
+(defun click (session x y)
   (send-command
     session
     :post
-    ((session-data-base session) "/click")))
+    ((session-data-base session) "/click")
+    (generate-content-of-position x y)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/doubleclick
 ; This function is not yet implemented.
-(defun doubleclick (session)
+(defun doubleclick (session x y)
   (send-command
     session
     :post
-    ((session-data-base session) "/doubleclick")))
+    ((session-data-base session) "/doubleclick")
+    (generate-content-of-position x y)))
 
 ; HTTP Command:  GET
 ; Path:         /session/:sessionId/location
@@ -78,81 +79,84 @@
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/moveto
 ; This function is not yet implemented.
-(defun move-to (session)
+(defun move-to (session x y)
   (send-command
     session
     :post
-    ((session-data-base session) "/moveto")))
+    ((session-data-base session) "/moveto")
+    (generate-content-of-position x y)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/click
-; This function is not yet implemented.
-(defun touch-click (session)
+(defun touch-click (session element-id)
   (send-command
     session
     :post
-    ((session-data-base session) "/touch/click")))
+    ((session-data-base session) "/touch/click")
+    (generate-content-of-touch-element element-id)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/doubleclick
-; This function is not yet implemented.
-(defun touch-doubleclick (session)
+(defun touch-double-click (session element-id)
   (send-command
     session
     :post
-    ((session-data-base session) "/touch/doubleclick")))
+    ((session-data-base session) "/touch/doubleclick")
+    (generate-content-of-touch-element element-id)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/down
-; This function is not yet implemented.
-(defun touch-down (session)
+(defun touch-down (session x y)
   (send-command
     session
     :post
-    ((session-data-base session) "/touch/down")))
+    ((session-data-base session) "/touch/down")
+    (generate-content-of-position x y)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/flick
-; This function is not yet implemented.
-(defun touch-flick (session)
+(defun touch-flick (session xspeed yspeed)
   (send-command
     session
     :post
-    ((session-data-base session) "/touch/flick")))
+    ((session-data-base session) "/touch/flick")
+    (jonathan:to-json
+      `(:|xspeed| ,xspeed :|yspeed| ,yspeed))))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/longclick
-; This function is not yet implemented.
-(defun touch-longclick (session)
+(defun touch-long-click (session element-id)
   (send-command
     session
     :post
-    ((session-data-base session) "/touch/longclick")))
+    ((session-data-base session) "/touch/longclick")
+    (generate-content-of-touch-element element-id)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/move
-; This function is not yet implemented.
-(defun touch-move (session)
+(defun touch-move (session x y)
   (send-command
     session
     :post
-    ((session-data-base session) "/touch/move")))
+    ((session-data-base session) "/touch/move")
+    (generate-content-of-position x y)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/scroll
-; This function is not yet implemented.
-(defun touch-scroll (session)
+(defun touch-scroll (session element-id xoffset yoffset)
   (send-command
     session
     :post
-    ((session-data-base session) "/touch/scroll")))
+    ((session-data-base session) "/touch/scroll")
+    (jonathan:to-json
+      `(:|element| ,element-id :|xoffset| ,xoffset :|yoffset| ,yoffset))))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/up
-; This function is not yet implemented.
-(defun touch-up (session)
+(defun touch-up (session x y)
   (send-command
     session
     :post
-    ((session-data-base session) "/touch/up")))
+    ((session-data-base session) "/touch/up")
+    (generate-content-of-position x y)))
 

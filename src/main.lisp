@@ -231,13 +231,26 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
   :take-element-screenshot
   :take-screenshot
   :touch-click
-  :touch-doubleclick
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
+  :touch-double-click
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
   :touch-down
+    x, integer, This argument should specify the x-coordinate of the operating position.
+    y, integer, This argument should specify the y-coordinate of the operating position.
   :touch-flick
-  :touch-longclick
+    xspeed, integer, This argument should specify the flick speed in the x-axis direction.
+    yspeed, integer, This argument should specify the flick speed in the y-axis direction.
+  :touch-long-click
+    element-id, string, This argument should specify the element ID of the element you wish to operate on.
   :touch-move
+    x, integer, This argument should specify the x-coordinate to be moved to.
+    y, integer, This argument should specify the y-coordinate to be moved to.
   :touch-scroll
+    xoffset, integer, This argument should specify the offset in the x-axis direction.
+    yoffset, integer, This argument should specify the offset in the y-axis direction.
   :touch-up
+    x, integer, This argument should specify the x-coordinate of the operating position.
+    y, integer, This argument should specify the y-coordinate of the operating position.
   :window-maximize-with-window-handle
     window-handle, string,  This argument should specify the handle of the window you wish to operate on.
   "
@@ -308,18 +321,18 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:back () 
                         (return-win-app-driver-server-response 
                           (back session)))
-                 (:button-down () 
+                 (:button-down (x y) 
                                (return-win-app-driver-server-response 
-                                 (button-down session)))
-                 (:button-up () 
+                                 (button-down session x y)))
+                 (:button-up (x y) 
                              (return-win-app-driver-server-response 
-                               (button-up session)))
-                 (:click () 
+                               (button-up session x y)))
+                 (:click (x y) 
                          (return-win-app-driver-server-response 
-                           (click session)))
-                 (:double-click () 
+                           (click session x y)))
+                 (:double-click (x y) 
                                 (return-win-app-driver-server-response 
-                                  (double-click session)))
+                                  (double-click session x y)))
                  (:find-element (selector value) 
                                 (return-win-app-driver-server-response 
                                   (find-element session selector value)))
@@ -339,8 +352,8 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                                  (return-win-app-driver-server-response 
                                    (element-click session element-id)))
                  (:is-element-displayed (element-id) 
-                                     (return-win-app-driver-server-response 
-                                       (is-element-displayed session element-id)))
+                                        (return-win-app-driver-server-response 
+                                          (is-element-displayed session element-id)))
                  (:find-element-from-element (element-id selector value) 
                                              (return-win-app-driver-server-response 
                                                (find-element-from-element session element-id selector value)))
@@ -378,8 +391,8 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                                      (return-win-app-driver-server-response 
                                        (element-send-keys session element-id keys)))
                  (:element-send-string (element-id &rest string) ; non-specific function.
-                                     (return-win-app-driver-server-response 
-                                       (element-send-string session element-id string)))
+                                       (return-win-app-driver-server-response 
+                                         (element-send-string session element-id string)))
                  (:forward () 
                            (return-win-app-driver-server-response 
                              (forward session)))
@@ -392,49 +405,49 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:location () 
                             (return-win-app-driver-server-response 
                               (location session)))
-                 (:move-to () 
+                 (:move-to (x y) 
                            (return-win-app-driver-server-response 
-                             (move-to session)))
+                             (move-to session x y)))
                  (:orientation () 
                                (return-win-app-driver-server-response 
                                  (orientation session)))
                  (:take-screenshot () 
                                    (return-win-app-driver-server-response 
                                      (take-screenshot session)))
-                 (:get-source () 
+                 (:get-source ()
                               (return-win-app-driver-server-response 
                                 (get-source session)))
                  (:set-timeouts (&key implicit) 
                                 (return-win-app-driver-server-response 
                                   (set-timeouts session
                                                 :implicit implicit)))
-                 (:get-title () 
+                 (:get-title ()
                              (return-win-app-driver-server-response 
                                (get-title session)))
-                 (:touch-click () 
+                 (:touch-click (element-id) 
                                (return-win-app-driver-server-response 
-                                 (touch-click session)))
-                 (:touch-doubleclick () 
-                                     (return-win-app-driver-server-response 
-                                       (touch-doubleclick session)))
-                 (:touch-down () 
+                                 (touch-click session element-id)))
+                 (:touch-double-click (element-id) 
+                                      (return-win-app-driver-server-response 
+                                        (touch-double-click session element-id)))
+                 (:touch-down (x y)
                               (return-win-app-driver-server-response 
-                                (touch-down session)))
-                 (:touch-flick () 
+                                (touch-down session x y)))
+                 (:touch-flick (xspeed yspeed) 
                                (return-win-app-driver-server-response 
-                                 (touch-flick session)))
-                 (:touch-longclick () 
-                                   (return-win-app-driver-server-response 
-                                     (touch-longclick session)))
-                 (:touch-move () 
+                                 (touch-flick session xspeed yspeed)))
+                 (:touch-long-click (element-id) 
+                                    (return-win-app-driver-server-response 
+                                      (touch-long-click session element-id)))
+                 (:touch-move (x y) 
                               (return-win-app-driver-server-response 
-                                (touch-move session)))
-                 (:touch-scroll () 
+                                (touch-move session x y)))
+                 (:touch-scroll (element-id xoffset yoffset) 
                                 (return-win-app-driver-server-response 
-                                  (touch-scroll session)))
-                 (:touch-up () 
+                                  (touch-scroll session element-id xoffset yoffset)))
+                 (:touch-up (x y) 
                             (return-win-app-driver-server-response 
-                              (touch-up session)))
+                              (touch-up session x y)))
                  (:close-window () 
                                 (return-win-app-driver-server-response 
                                   (close-window session)))

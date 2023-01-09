@@ -21,7 +21,7 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.1.24"
+           :version "0.1.25"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("alexandria"
@@ -39,10 +39,11 @@
                                   (:module "apis"
                                            :depends-on ("package" "conditions" "utilities")
                                            :components
-                                           ((:file "actions"             :depends-on ("client"))
+                                           ((:file "actions"             :depends-on ("client" "content"))
                                             (:file "appium"              :depends-on ("client"))
                                             (:file "client")
-                                            (:file "contexts"            :depends-on ("client"))
+                                            (:file "content")
+                                            (:file "contexts"            :depends-on ("client" "content"))
                                             (:file "document"            :depends-on ("client"))
                                             (:file "element-interaction" :depends-on ("client"))
                                             (:file "element-retrieval"   :depends-on ("client"))

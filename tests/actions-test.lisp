@@ -22,4 +22,164 @@
 
 (in-package :win-app-driver/tests)
 
+(let
+  ((calculator-session (win-app-driver::create-session)))
+  (funcall                                                ; Run Calcurator
+    calculator-session
+    :new-session
+    :host *win-app-driver-host*
+    :port *win-app-driver-port*
+    :app "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App")
+  (flet
+    ((get-axis-point (element-identifier)
+                     (let*
+                       ((elemenet-id (win-app-driver::get-element-id
+                                       (funcall calculator-session
+                                                :find-element
+                                                :automation-id element-identifier)))
+                        (response    (funcall calculator-session
+                                              :get-element-location
+                                              elemenet-id)))
+                       (values
+                         elemenet-id
+                         (getf (win-app-driver::get-value response) :|x|)
+                         (getf (win-app-driver::get-value response) :|y|)))))
+    (let
+      ((base (win-app-driver::session-data-base
+                        (funcall
+                          calculator-session
+                          :pandoric-get
+                          'win-app-driver::session)))
+       clear-button-id
+       clear-button-x
+       clear-button-y
+       equal-button-id
+       equal-button-x
+       equal-button-y
+       num1-button-id
+       num1-button-x
+       num1-button-y
+       plus-button-id
+       plus-button-x
+       plus-button-y)
+      (setf
+        (values num1-button-id num1-button-x num1-button-y)    (get-axis-point "num1Button")
+        (values plus-button-id plus-button-x plus-button-y)    (get-axis-point "plusButton")
+        (values equal-button-id equal-button-x equal-button-y) (get-axis-point "equalButton")
+        (values clear-button-id clear-button-x clear-button-y) (get-axis-point "clearButton"))
+      ;; mouse operations
+
+      ;; touch operations
+      (subtest "Testing touch-click."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :touch-click
+                   num1-button-id)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/touch/click")))
+
+      (funcall calculator-session :touch-click plus-button-id)
+
+      (subtest "Testing touch-double-click."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :touch-double-click
+                   num1-button-id)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/touch/doubleclick")))
+
+      (subtest "Testing touch-long-click."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :touch-long-click
+                   equal-button-id)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/touch/longclick")))
+
+      (subtest "Testing touch-down."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :touch-down
+                   clear-button-x
+                   clear-button-y)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/touch/down")))
+
+      (subtest "Testing touch-up."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :touch-up
+                   clear-button-x
+                   clear-button-y)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/touch/up")))
+
+      (subtest "Testing touch-flick."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :touch-flick
+                   -50
+                   50)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/touch/flick")))
+
+      (funcall calculator-session :touch-flick  50 -50)
+
+      (subtest "Testing touch-move."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :touch-move
+                   -50
+                   50)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/touch/move")))
+
+      (funcall calculator-session :touch-move   50 -50)
+
+      (subtest "Testing touch-scroll."
+               (test-api
+                 (funcall calculator-session
+                          :touch-scroll
+                          num1-button-id
+                          0
+                          50)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/touch/scroll")))
+
+      (funcall calculator-session :touch-scroll num1-button-id 0 -50)
+
+      (funcall
+        calculator-session
+        :delete-session))))
 

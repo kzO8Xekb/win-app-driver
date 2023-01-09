@@ -22,6 +22,10 @@
 
 (in-package :win-app-driver)
 
+(declaim (inline generate-content-of-window-size))
+(defun generate-content-of-window-size (width height)
+  (jonathan:to-json `(:|height| ,height :|width| ,width)))
+
 ;; Command Summary
 ;; see https://github.com/microsoft/WinAppDriver/blob/master/Docs/SupportedAPIs.md
 ; The following is a list of APIs supported by WinAppDriver:
@@ -44,10 +48,6 @@
     session
     :post
     ((session-data-base session) "/window/maximize")))
-
-(declaim (inline generate-content-of-window-size))
-(defun generate-content-of-window-size (width height)
-  (jonathan:to-json `(:|height| ,height :|width| ,width)))
 
 ; Set Window Size
 ; HTTP Command: POST
@@ -87,10 +87,6 @@
     :get
     ((session-data-base session) "/window/" window-handle "/size")))
 
-(declaim (inline generate-content-of-window-position))
-(defun generate-content-of-window-position (x y)
-  (jonathan:to-json `(:|x| ,x :|y| ,y)))
-
 ; Set WindowPosition with WindowHandle
 ; HTTP Command: POST
 ; Path:         /session/:sessionId/window/:windowHandle/position
@@ -99,7 +95,7 @@
     session
     :post
     ((session-data-base session) "/window/" window-handle "/position")
-    (generate-content-of-window-position x y)))
+    (generate-content-of-position x y)))
 
 ; Get WindowPosition with WindowHandle
 ; HTTP Command: GET
