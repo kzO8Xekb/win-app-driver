@@ -64,7 +64,9 @@
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/moveto
-(sb-c:defknown move-to (SESSION-DATA T T &optional T) *) ; Error!
+
+; I could not come up with an implementation method that would avoid the use of SBCL-specific functions.
+(sb-c:defknown move-to (SESSION-DATA T T &optional T) *) ; In this case, an error should be made.
 
 (sb-c:deftransform move-to ((session element-id xoffset &optional yoffset) (SESSION-DATA STRING INTEGER INTEGER) *) 
   `(move-to-impl1 session element-id xoffset yoffset))
@@ -145,7 +147,7 @@
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/flick
-(sb-c:defknown touch-flick (SESSION-DATA T T &optional T T) *) ; Error!
+(sb-c:defknown touch-flick (SESSION-DATA T T &optional T T) *) ; In this case, an error should be made.
 
 (sb-c:deftransform touch-flick ((session xoffset yoffset &optional _1 _2) (SESSION-DATA INTEGER INTEGER NIL NIL) *) 
   `(touch-flick-impl1 session xoffset yoffset))
@@ -219,12 +221,12 @@
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/scroll
-(sb-c:defknown touch-scroll (session-data t t &optional t t) *) ; error!
+(sb-c:defknown touch-scroll (session-data t t &optional t) *) ; In this case, an error should be made.
 
-(sb-c:deftransform touch-scroll ((session xoffset yoffset &optional _1 _2) (session-data integer integer nil nil) *) 
+(sb-c:deftransform touch-scroll ((session xoffset yoffset &optional _) (session-data integer integer nil) *) 
   `(touch-scroll-impl1 session xoffset yoffset))
 
-(sb-c:deftransform touch-scroll ((session element-id xoffset &optional yoffset speed) (session-data string integer integer integer) *) 
+(sb-c:deftransform touch-scroll ((session element-id xoffset &optional yoffset) (session-data string integer integer) *) 
   `(touch-scroll-impl2 session element-id xoffset yoffset))
 
 (defun touch-scroll (session arg1 arg2 &optional (arg3 nil))

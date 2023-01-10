@@ -84,6 +84,11 @@ Thank you very much.
 
 Extract the complete set of win-app-driver files to your quicklisp/local-projects/win-app-driver folder.
 
+## References
+1. [WinAppDriver Command Summary](https://github.com/microsoft/WinAppDriver/blob/master/Docs/SupportedAPIs.md)
+1. [WebDriver Specification(W3C Working Draft)](https://www.w3.org/TR/webdriver/)
+1. [JSON Wire Protocol Specification](https://www.selenium.dev/documentation/legacy/json_wire_protocol/)
+
 ## License
 
 [MIT License](http://www.opensource.org/licenses/mit-license)
