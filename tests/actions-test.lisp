@@ -46,10 +46,10 @@
                          (getf (win-app-driver::get-value response) :|y|)))))
     (let
       ((base (win-app-driver::session-data-base
-                        (funcall
-                          calculator-session
-                          :pandoric-get
-                          'win-app-driver::session)))
+               (funcall
+                 calculator-session
+                 :pandoric-get
+                 'win-app-driver::session)))
        clear-button-id
        clear-button-x
        clear-button-y
@@ -67,7 +67,176 @@
         (values plus-button-id plus-button-x plus-button-y)    (get-axis-point "plusButton")
         (values equal-button-id equal-button-x equal-button-y) (get-axis-point "equalButton")
         (values clear-button-id clear-button-x clear-button-y) (get-axis-point "clearButton"))
+
       ;; mouse operations
+      (subtest "Testing move-to."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :move-to
+                   0
+                   0)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/moveto"))
+
+               (test-api
+                 (funcall
+                   calculator-session
+                   :move-to
+                   num1-button-id
+                   0
+                   0)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/moveto")))
+
+      (funcall calculator-session :move-to plus-button-id 0 0)
+
+      (subtest "Testing click."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :click
+                   :mouse-left-button)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/click"))
+
+               (test-api
+                 (funcall
+                   calculator-session
+                   :click)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/click"))
+
+               (test-api
+                 (funcall
+                   calculator-session
+                   :click
+                   :mouse-middle-button)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/click"))
+
+               (test-api
+                 (funcall
+                   calculator-session
+                   :click
+                   :mouse-right-button)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/click"))
+
+               (is-error
+                 (funcall calculator-session :click 0)
+                 'win-app-driver:condition-incorrect-mouse-button))
+
+      (funcall calculator-session :move-to num1-button-id 0 0)
+
+      (subtest "Testing double-click."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :double-click)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/doubleclick")))
+
+      (funcall calculator-session :move-to equal-button-id 0 0)
+      (funcall calculator-session :click :mouse-left-button)
+      (funcall calculator-session :move-to clear-button-id 0 0)
+
+      (subtest "Testing button-down."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :button-down
+                   :mouse-left-button)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/buttondown"))
+
+               (test-api
+                 (funcall
+                   calculator-session
+                   :button-down
+                   :mouse-middle-button)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/buttondown"))
+
+               (test-api
+                 (funcall
+                   calculator-session
+                   :button-down
+                   :mouse-right-button)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/buttondown"))
+
+               (is-error
+                 (funcall calculator-session :button-down num1-button-id)
+                 'win-app-driver:condition-incorrect-mouse-button))
+
+      (subtest "Testing button-up."
+               (test-api
+                 (funcall
+                   calculator-session
+                   :button-up
+                   :mouse-left-button)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/buttonup"))
+
+               (test-api
+                 (funcall
+                   calculator-session
+                   :button-up
+                   :mouse-middle-button)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/buttonup"))
+
+               (test-api
+                 (funcall
+                   calculator-session
+                   :button-up
+                   :mouse-right-button)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/buttonup"))
+
+               (is-error
+                 (funcall calculator-session :button-up num1-button-id)
+                 'win-app-driver:condition-incorrect-mouse-button))
 
       ;; touch operations
       (subtest "Testing touch-click."
@@ -145,9 +314,31 @@
                  :path           (concatenate
                                    'string
                                    base
-                                   "/touch/flick")))
+                                   "/touch/flick"))
 
-      (funcall calculator-session :touch-flick  50 -50)
+               (funcall calculator-session :touch-flick 50 -50)
+
+               (test-api
+                 (funcall
+                   calculator-session
+                   :touch-flick
+                   num1-button-id
+                   -50
+                   50
+                   128)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/touch/flick"))
+
+               (funcall
+                   calculator-session
+                   :touch-flick
+                   num1-button-id
+                   50
+                   -50
+                   128))
 
       (subtest "Testing touch-move."
                (test-api
@@ -162,7 +353,7 @@
                                    base
                                    "/touch/move")))
 
-      (funcall calculator-session :touch-move   50 -50)
+      (funcall calculator-session :touch-move 50 -50)
 
       (subtest "Testing touch-scroll."
                (test-api
@@ -171,6 +362,17 @@
                           num1-button-id
                           0
                           50)
+                 :content-length "63"
+                 :path           (concatenate
+                                   'string
+                                   base
+                                   "/touch/scroll"))
+
+               (test-api
+                 (funcall calculator-session
+                          :touch-scroll
+                          0
+                          0)
                  :content-length "63"
                  :path           (concatenate
                                    'string

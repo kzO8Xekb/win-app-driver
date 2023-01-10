@@ -29,62 +29,92 @@
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/buttondown
-; This function is not yet implemented.
-(defun button-down (session x y)
+(defun button-down (session button)
   (send-command
     session
     :post
     ((session-data-base session) "/buttondown")
-    (generate-content-of-position x y)))
+    (generate-mouse-button-content button)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/buttonup
-; This function is not yet implemented.
-(defun button-up (session x y)
+(defun button-up (session button)
   (send-command
     session
     :post
     ((session-data-base session) "/buttonup")
-    (generate-content-of-position x y)))
+    (generate-mouse-button-content button)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/click
-; This function is not yet implemented.
-(defun click (session x y)
+(defun click (session button)
   (send-command
     session
     :post
     ((session-data-base session) "/click")
-    (generate-content-of-position x y)))
+    (generate-mouse-button-content button)))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/doubleclick
-; This function is not yet implemented.
-(defun doubleclick (session x y)
+(defun double-click (session)
   (send-command
     session
     :post
-    ((session-data-base session) "/doubleclick")
-    (generate-content-of-position x y)))
-
-; HTTP Command:  GET
-; Path:         /session/:sessionId/location
-; This function is not yet implemented.
-(defun location (session)
-  (send-command
-    session
-    :get
-    ((session-data-base session) "/location")))
+    ((session-data-base session) "/doubleclick")))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/moveto
-; This function is not yet implemented.
-(defun move-to (session x y)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/moveto")
-    (generate-content-of-position x y)))
+(sb-c:defknown move-to (SESSION-DATA T T &optional T) *) ; Error!
+
+(sb-c:deftransform move-to ((session element-id xoffset &optional yoffset) (SESSION-DATA STRING INTEGER INTEGER) *) 
+  `(move-to-impl1 session element-id xoffset yoffset))
+
+(sb-c:deftransform move-to ((session xoffset yoffset &optional _) (SESSION-DATA INTEGER INTEGER NIL) *) 
+  `(move-to-impl2 session xoffset yoffset))
+
+(defun move-to (session arg1 arg2 &optional (arg3 nil))
+  (cond
+    ((and
+       (session-data-p session)
+       (integerp       arg1)
+       (integerp       arg2)
+       (null           arg3))
+     (move-to-impl2 session arg1 arg2))
+    ((and
+       (session-data-p session)
+       (stringp        arg1)
+       (integerp       arg2)
+       (integerp       arg3))
+     (move-to-impl1 session arg1 arg2 arg3))
+    (t 
+      (error
+        (make-condition
+          'win-app-driver:condition-incorrect-arguments
+          :caller      'move-to
+          :caller-args (session arg1 arg2 arg3))))))
+
+(defun move-to-impl1 (session element-id xoffset &optional yoffset)
+  (flet
+    ((generate-content (element-id xoffset yoffset)
+                         (jonathan:to-json
+                           `(:|element| ,element-id :|xoffset| ,xoffset :|yoffset| ,yoffset))))
+    (send-command
+      session
+      :post
+      ((session-data-base session) "/moveto")
+      (generate-content element-id xoffset yoffset))))
+
+(defun move-to-impl2 (session xoffset yoffset &optional _)
+  (declare (ignorable _))
+  (flet
+    ((generate-content (xoffset yoffset)
+                         (jonathan:to-json
+                           `(:|xoffset| ,xoffset :|yoffset| ,yoffset))))
+    (send-command
+      session
+      :post
+      ((session-data-base session) "/moveto")
+      (generate-content xoffset yoffset))))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/click
@@ -115,13 +145,59 @@
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/flick
-(defun touch-flick (session xspeed yspeed)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/touch/flick")
-    (jonathan:to-json
-      `(:|xspeed| ,xspeed :|yspeed| ,yspeed))))
+(sb-c:defknown touch-flick (SESSION-DATA T T &optional T T) *) ; Error!
+
+(sb-c:deftransform touch-flick ((session xoffset yoffset &optional _1 _2) (SESSION-DATA INTEGER INTEGER NIL NIL) *) 
+  `(touch-flick-impl1 session xoffset yoffset))
+
+(sb-c:deftransform touch-flick ((session element-id xoffset &optional yoffset speed) (SESSION-DATA STRING INTEGER INTEGER INTEGER) *) 
+  `(touch-flick-impl2 session element-id xoffset yoffset))
+
+(defun touch-flick (session arg1 arg2 &optional (arg3 nil) (arg4 nil))
+  (cond
+    ((and
+       (session-data-p session)
+       (integerp       arg1)
+       (integerp       arg2)
+       (null           arg3)
+       (null           arg4))
+     (touch-flick-impl1 session arg1 arg2))
+    ((and
+       (session-data-p session)
+       (stringp        arg1)
+       (integerp       arg2)
+       (integerp       arg3)
+       (integerp       arg4))
+     (touch-flick-impl2 session arg1 arg2 arg3 arg4))
+    (t 
+      (error
+        (make-condition
+          'win-app-driver:condition-incorrect-arguments
+          :caller      'touch-flick
+          :caller-args (session arg1 arg2 arg3 arg4))))))
+
+(defun touch-flick-impl1 (session xspeed yspeed &optional (_1 nil) (_2 nil))
+  (declare (ignorable _1 _2))
+  (flet
+    ((generate-content (xspeed yspeed)
+                       (jonathan:to-json
+                         `(:|xspeed| ,xspeed :|yspeed| ,yspeed))))
+    (send-command
+      session
+      :post
+      ((session-data-base session) "/touch/flick")
+      (generate-content xspeed yspeed))))
+
+(defun touch-flick-impl2 (session element-id xoffset &optional yoffset speed)
+  (flet
+    ((generate-content (xoffset yoffset)
+                       (jonathan:to-json
+                         `(:|element| ,element-id :|xoffset| ,xoffset :|yoffset| ,yoffset :|speed| ,speed))))
+    (send-command
+      session
+      :post
+      ((session-data-base session) "/touch/flick")
+      (generate-content xoffset yoffset))))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/longclick
@@ -143,13 +219,57 @@
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/scroll
-(defun touch-scroll (session element-id xoffset yoffset)
-  (send-command
-    session
-    :post
-    ((session-data-base session) "/touch/scroll")
-    (jonathan:to-json
-      `(:|element| ,element-id :|xoffset| ,xoffset :|yoffset| ,yoffset))))
+(sb-c:defknown touch-scroll (session-data t t &optional t t) *) ; error!
+
+(sb-c:deftransform touch-scroll ((session xoffset yoffset &optional _1 _2) (session-data integer integer nil nil) *) 
+  `(touch-scroll-impl1 session xoffset yoffset))
+
+(sb-c:deftransform touch-scroll ((session element-id xoffset &optional yoffset speed) (session-data string integer integer integer) *) 
+  `(touch-scroll-impl2 session element-id xoffset yoffset))
+
+(defun touch-scroll (session arg1 arg2 &optional (arg3 nil))
+  (cond
+    ((and
+       (session-data-p session)
+       (integerp       arg1)
+       (integerp       arg2)
+       (null           arg3))
+     (touch-scroll-impl1 session arg1 arg2))
+    ((and
+       (session-data-p session)
+       (stringp        arg1)
+       (integerp       arg2)
+       (integerp       arg3))
+     (touch-scroll-impl2 session arg1 arg2 arg3))
+    (t 
+      (error
+        (make-condition
+          'win-app-driver:condition-incorrect-arguments
+          :caller      'touch-scroll
+          :caller-args (session arg1 arg2 arg3))))))
+
+(defun touch-scroll-impl1 (session xoffset yoffset &optional (_ nil))
+  (declare (ignorable _))
+  (flet
+    ((generate-content (xoffset yoffset)
+                       (jonathan:to-json
+                         `(:|xoffset| ,xoffset :|yoffset| ,yoffset))))
+    (send-command
+      session
+      :post
+      ((session-data-base session) "/touch/scroll")
+      (generate-content xoffset yoffset))))
+
+(defun touch-scroll-impl2 (session element-id xoffset &optional yoffset)
+  (flet
+    ((generate-content (element-id xoffset yoffset)
+                       (jonathan:to-json
+                         `(:|element| ,element-id :|xoffset| ,xoffset :|yoffset| ,yoffset))))
+    (send-command
+      session
+      :post
+      ((session-data-base session) "/touch/scroll")
+      (generate-content element-id xoffset yoffset))))
 
 ; HTTP Command:  POST
 ; Path:         /session/:sessionId/touch/up

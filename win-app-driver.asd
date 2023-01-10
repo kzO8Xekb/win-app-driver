@@ -21,7 +21,7 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.1.25"
+           :version "0.1.26"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("alexandria"
@@ -48,6 +48,7 @@
                                             (:file "element-interaction" :depends-on ("client"))
                                             (:file "element-retrieval"   :depends-on ("client"))
                                             (:file "element-state"       :depends-on ("client"))
+                                            (:file "location"            :depends-on ("client"))
                                             (:file "navigation"          :depends-on ("client"))
                                             (:file "orientation"         :depends-on ("client"))
                                             (:file "screen-capture"      :depends-on ("client"))

@@ -22,6 +22,8 @@
 
 (defpackage win-app-driver
   (:use :cl :lol)
+  (:shadow :condition-incorrect-arguments)
+
   (:import-from :dexador)
   (:import-from :jonathan)
   (:import-from :let-over-lambda)
@@ -33,6 +35,7 @@
   (:export
     :condition-incorrect-arguments
     :condition-incorrect-hostname-string
+    :condition-incorrect-mouse-button
     :condition-incorrect-port-number
     :condition-unexpected-error
     :condition-unknown-http-command-error
@@ -61,6 +64,12 @@
     :session-data-host
     :session-data-id
     :session-data-port
+    )
+
+  (:export
+    :mouse-left-button
+    :mouse-middle-button
+    :mouse-right-button
     )
 
   ; apis/element.lisp

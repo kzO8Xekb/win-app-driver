@@ -89,12 +89,27 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
   :active-element
   :back
   :button-down
+    button, [optional]symbol, For this argument, specify the symbol of the mouse button to be operated. If nothing is specified, the left mouse button is the default. The possible symbols are.
+                        Mouse Button Symbols       Description
+                        :mouse-left-button         mouse left button.
+                        :mouse-middle-button       mouse middle button.
+                        :mouse-right-button        mouse right button.
   :button-up
+    button, [optional]symbol, For this argument, specify the symbol of the mouse button to be operated. If nothing is specified, the left mouse button is the default. The possible symbols are.
+                        Mouse Button Symbols       Description
+                        :mouse-left-button         mouse left button.
+                        :mouse-middle-button       mouse middle button.
+                        :mouse-right-button        mouse right button.
   :click
-  :close-app (for appium command)
+    button, [optional]symbol, For this argument, specify the symbol of the mouse button to be operated. If nothing is specified, the left mouse button is the default. The possible symbols are.
+                        Mouse Button Symbols       Description
+                        :mouse-left-button         mouse left button.
+                        :mouse-middle-button       mouse middle button.
+                        :mouse-right-button        mouse right button.
+  :close-app (for appium command) *unwork*
   :close-window
   :delete-session
-  :doubleclick
+  :double-click
   :element-clear
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
   :element-click
@@ -180,7 +195,7 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
   :get-element-text
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
-  :get-sessions
+  :get-sessions *not tested*
   :get-source
   :get-title
   :get-window-handle
@@ -196,10 +211,16 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     element-id, string, This argument should specify the element ID of the element to be investigated.
   :is-element-selected
     element-id, string, This argument should specify the element ID of the element to be investigated.
-  :launch-app (for appium command)
-  :location
+  :launch-app (for appium command) *unwork*
+  :location *unwork*
   :maximize-window
   :move-to
+    arg1(element-id), string,  This argument should specify element-id of the element becoming the moving starting point.
+    arg2(xoffset),    integer, This argument should specify the x-coordinate to be moved to.
+    arg3(yoffset),    integer, This argument should specify the y-coordinate to be moved to.
+       or
+    arg1(xoffset),    integer, This argument should specify the x-coordinate to be moved to.
+    arg2(yoffset),    integer, This argument should specify the y-coordinate to be moved to.
   :new-session
     app,                  [key]string, Application identifier or executable full path. ex. \"Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge\"
     app-arguments,        [key]string, Application launch arguments. ex. \"https://github.com/Microsoft/WinAppDriver\"
@@ -228,7 +249,7 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     width,         integer, This argument should specify the new width value.
     height,        integer, This argument should specify the new height value.
   :status
-  :take-element-screenshot
+  :take-element-screenshot *unwork*
   :take-screenshot
   :touch-click
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
@@ -238,16 +259,25 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     x, integer, This argument should specify the x-coordinate of the operating position.
     y, integer, This argument should specify the y-coordinate of the operating position.
   :touch-flick
-    xspeed, integer, This argument should specify the flick speed in the x-axis direction.
-    yspeed, integer, This argument should specify the flick speed in the y-axis direction.
+    arg1(xspeed),     integer, This argument should specify the flick speed in the x-axis direction.
+    arg2(yspeed),     integer, This argument should specify the flick speed in the y-axis direction.
+    or
+    arg1(element-id), string,  This argument should specify element-id of the element becoming the moving starting point.
+    arg2(xoffset),    integer, This argument should specify the x-coordinate to be moved to.
+    arg3(yoffset),    integer, This argument should specify the y-coordinate to be moved to.
+    arg4(speed),      integer, This argument should specify the flick speed.
   :touch-long-click
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
   :touch-move
     x, integer, This argument should specify the x-coordinate to be moved to.
     y, integer, This argument should specify the y-coordinate to be moved to.
   :touch-scroll
-    xoffset, integer, This argument should specify the offset in the x-axis direction.
-    yoffset, integer, This argument should specify the offset in the y-axis direction.
+    arg1(xoffset),    integer, This argument should specify the x-coordinate to be moved to.
+    arg2(yoffset),    integer, This argument should specify the y-coordinate to be moved to.
+    or
+    arg1(element-id), string,  This argument should specify element-id of the element becoming the scrolling starting point.
+    arg2(xoffset),    integer, This argument should specify the x-coordinate to be moved to.
+    arg3(yoffset),    integer, This argument should specify the y-coordinate to be moved to.
   :touch-up
     x, integer, This argument should specify the x-coordinate of the operating position.
     y, integer, This argument should specify the y-coordinate of the operating position.
@@ -321,18 +351,18 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:back () 
                         (return-win-app-driver-server-response 
                           (back session)))
-                 (:button-down (x y) 
+                 (:button-down (&optional (button :mouse-left-button)) 
                                (return-win-app-driver-server-response 
-                                 (button-down session x y)))
-                 (:button-up (x y) 
+                                 (button-down session button)))
+                 (:button-up (&optional (button :mouse-left-button)) 
                              (return-win-app-driver-server-response 
-                               (button-up session x y)))
-                 (:click (x y) 
+                               (button-up session button)))
+                 (:click (&optional (button :mouse-left-button))
                          (return-win-app-driver-server-response 
-                           (click session x y)))
-                 (:double-click (x y) 
+                           (click session button)))
+                 (:double-click () 
                                 (return-win-app-driver-server-response 
-                                  (double-click session x y)))
+                                  (double-click session)))
                  (:find-element (selector value) 
                                 (return-win-app-driver-server-response 
                                   (find-element session selector value)))
@@ -405,9 +435,9 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:location () 
                             (return-win-app-driver-server-response 
                               (location session)))
-                 (:move-to (x y) 
+                 (:move-to (arg1 arg2 &optional (arg3 nil))
                            (return-win-app-driver-server-response 
-                             (move-to session x y)))
+                             (move-to session arg1 arg2 arg3)))
                  (:orientation () 
                                (return-win-app-driver-server-response 
                                  (orientation session)))
@@ -433,18 +463,18 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                  (:touch-down (x y)
                               (return-win-app-driver-server-response 
                                 (touch-down session x y)))
-                 (:touch-flick (xspeed yspeed) 
-                               (return-win-app-driver-server-response 
-                                 (touch-flick session xspeed yspeed)))
+                 (:touch-flick (arg1 arg2 &optional (arg3 nil) (arg4 nil))
+                               (return-win-app-driver-server-response
+                                 (touch-flick session arg1 arg2 arg3 arg4)))
                  (:touch-long-click (element-id) 
                                     (return-win-app-driver-server-response 
                                       (touch-long-click session element-id)))
                  (:touch-move (x y) 
                               (return-win-app-driver-server-response 
                                 (touch-move session x y)))
-                 (:touch-scroll (element-id xoffset yoffset) 
+                 (:touch-scroll (arg1 arg2 &optional (arg3 nil)) 
                                 (return-win-app-driver-server-response 
-                                  (touch-scroll session element-id xoffset yoffset)))
+                                  (touch-scroll session arg1 arg2 arg3)))
                  (:touch-up (x y) 
                             (return-win-app-driver-server-response 
                               (touch-up session x y)))

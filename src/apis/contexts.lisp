@@ -22,10 +22,6 @@
 
 (in-package :win-app-driver)
 
-(declaim (inline generate-content-of-window-size))
-(defun generate-content-of-window-size (width height)
-  (jonathan:to-json `(:|height| ,height :|width| ,width)))
-
 ;; Command Summary
 ;; see https://github.com/microsoft/WinAppDriver/blob/master/Docs/SupportedAPIs.md
 ; The following is a list of APIs supported by WinAppDriver:

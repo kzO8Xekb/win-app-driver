@@ -838,6 +838,19 @@
                                  *base64-regex*)))
 
     ; ToDo take-element-screenshot.
+    ; I could not run this in my test environment.
+
+    ; I could not run this in my test environment.
+    ;(subtest "Testing location."
+    ;         (test-api
+    ;           (funcall
+    ;             notepad-session
+    ;             :location)
+    ;           :content-length "63" ; ?
+    ;           :path           (concatenate
+    ;                             'string
+    ;                             base
+    ;                             "/location")))
 
     (subtest "Testing orientation."
              (test-api

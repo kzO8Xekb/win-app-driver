@@ -227,6 +227,7 @@
 (define-conditions
   (condition-incorrect-arguments        win-app-driver-error-condition "Incorrect arguments have been given to the function or macro function. Correct them with the appropriate arguments. If the error is caused by a function, (describe 'error-function-symbol) may provide useful information.")
   (condition-incorrect-hostname-string  win-app-driver-error-condition "Incorrect hostname string. The given string does not meet the hostname specification. The hostname must be a string that conforms to RFC 952 and RFC 1123.")
+  (condition-incorrect-mouse-button     win-app-driver-error-condition "Incorrect mouse button symbol. You should pass one of symbols for the left button (\":mouse-left-button\"), middle button (\":mouse-middle-button\") or right button (\":mouse-right-button\") to the function.")
   (condition-incorrect-port-number      win-app-driver-error-condition "Incorrect port number. The port number must be a natural number between 1 and 65535.")
   (condition-unexpected-error           win-app-driver-error-condition "Unexpected error.")
   (condition-unknown-http-method-error  win-app-driver-error-condition "Unknown http method error.")

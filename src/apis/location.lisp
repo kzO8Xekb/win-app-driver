@@ -22,26 +22,12 @@
 
 (in-package :win-app-driver)
 
-(declaim (inline generate-content-of-position))
-(defun generate-content-of-position (x y)
-  (jonathan:to-json `(:|x| ,x :|y| ,y)))
-
-(declaim (inline generate-content-of-window-size))
-(defun generate-content-of-window-size (width height)
-  (jonathan:to-json `(:|height| ,height :|width| ,width)))
-
-(declaim (inline generate-content-of-touch-element))
-(defun generate-content-of-touch-element (element-id)
-  (jonathan:to-json
-    `(:|element| ,element-id)))
-
-(declaim (inline generate-mouse-button-content))
-(defun generate-mouse-button-content (button)
-  (case button
-    (:mouse-left-button   (jonathan:to-json `(:|button| 0)))
-    (:mouse-middle-button (jonathan:to-json `(:|button| 1)))
-    (:mouse-right-button  (jonathan:to-json `(:|button| 2)))
-    (otherwise            (error
-                            (make-condition
-                              'win-app-driver:condition-incorrect-mouse-button)))))
+; HTTP Command:  GET
+; Path:         /session/:sessionId/location
+; This function is not yet implemented.
+(defun location (session)
+  (send-command
+    session
+    :get
+    ((session-data-base session) "/location")))
 
