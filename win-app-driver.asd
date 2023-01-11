@@ -21,7 +21,7 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.1.27"
+           :version "0.1.28"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("alexandria"
@@ -84,6 +84,7 @@
                                   (:file "api-keys-test")
                                   (:file "apis-test")
                                   (:file "actions-test")
+                                  (:file "navigation-test")
                                   (:file "finalizer"))))
            :description "This package is WinAppDriver utilities test suite."
            :perform (test-op (op c) (symbol-call :prove :run c)))
