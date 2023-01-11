@@ -21,7 +21,7 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.1.28"
+           :version "0.1.29"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("alexandria"
@@ -82,6 +82,7 @@
                                   (:file "main-test")
                                   (:file "api-element-test")
                                   (:file "api-keys-test")
+                                  (:file "session-test")
                                   (:file "apis-test")
                                   (:file "actions-test")
                                   (:file "navigation-test")

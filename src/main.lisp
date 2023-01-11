@@ -195,7 +195,7 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
   :get-element-text
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
-  :get-sessions *not tested*
+  :get-sessions
   :get-source
   :get-title
   :get-window-handle
@@ -249,7 +249,7 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     width,         integer, This argument should specify the new width value.
     height,        integer, This argument should specify the new height value.
   :status
-  :take-element-screenshot *unwork*
+  :take-element-screenshot
   :take-screenshot
   :touch-click
     element-id, string, This argument should specify the element ID of the element you wish to operate on.

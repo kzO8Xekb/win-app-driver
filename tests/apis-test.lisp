@@ -36,92 +36,21 @@
 (let
   ((notepad-session (win-app-driver::create-session))
    base)
-  (subtest "Testing new-session."
-           (test-api
-             (funcall
-               notepad-session
-               :new-session
-               :host           *win-app-driver-host*
-               :port           *win-app-driver-port*
-               :app            "C:/Windows/System32/notepad.exe")
-             :app            (is
-                               (getf
-                                 (win-app-driver::get-value $json)
-                                 :|app|)
-                               "C:/Windows/System32/notepad.exe")
-             :platform-name  (is
-                               (getf
-                                 (win-app-driver::get-value $json)
-                                 :|platformName|)
-                               "Windows")
-             :path           "/session"
-             :content-length "138"
-             :value          (is
-                               (win-app-driver::get-value $json)
-                               `(:|platformName| "Windows" :|app| "C:/Windows/System32/notepad.exe")))
 
-           (setf base (win-app-driver::session-data-base
-                        (funcall
-                          notepad-session
-                          :pandoric-get
-                          'win-app-driver::session)))
+  (funcall
+    notepad-session
+    :new-session
+    :host           *win-app-driver-host*
+    :port           *win-app-driver-port*
+    :app            "C:/Windows/System32/notepad.exe")
 
-           ; initialized session-data check.
-           (like
-             (win-app-driver::session-data-id
+  (setf base (win-app-driver::session-data-base
                (funcall
                  notepad-session
                  :pandoric-get
-                 'win-app-driver::session))
-             (concatenate
-               'string
-               "^" *session-id-regex* "$"))
-           (is
-             (win-app-driver::session-data-capabilities
-               (funcall
-                 notepad-session
-                 :pandoric-get
-                 'win-app-driver::session))
-             "{\"desiredCapabilities\":{\"app\":\"C:/Windows/System32/notepad.exe\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\"}}")
-           (is
-             (win-app-driver::session-data-host
-               (funcall
-                 notepad-session
-                 :pandoric-get
-                 'win-app-driver::session))
-             *win-app-driver-host*)
-           (is
-             (win-app-driver::session-data-port
-               (funcall
-                 notepad-session
-                 :pandoric-get
-                 'win-app-driver::session))
-             *win-app-driver-port*)
-           (like
-             (win-app-driver::session-data-base
-               (funcall
-                 notepad-session
-                 :pandoric-get
-                 'win-app-driver::session))
-             (concatenate
-               'string
-               "^/session/" *session-id-regex* "$"))
-           (is
-             (win-app-driver::session-data-base
-               (funcall
-                 notepad-session
-                 :pandoric-get
-                 'win-app-driver::session))
-             (concatenate
-               'string
-               "/session/"
-               (win-app-driver::session-data-id
-                 (funcall
-                   notepad-session
-                   :pandoric-get
-                   'win-app-driver::session)))))
+                 'win-app-driver::session)))
 
-  ; Find Element
+   ; Find Element
   (subtest "Testing find-element."
            (test-api
              (funcall
@@ -837,9 +766,6 @@
                                  (win-app-driver::get-value $json)
                                  *base64-regex*)))
 
-    ; ToDo take-element-screenshot.
-    ; I could not run this in my test environment.
-
     ; I could not run this in my test environment.
     ;(subtest "Testing location."
     ;         (test-api
@@ -875,40 +801,22 @@
                                  "LANDSCAPE")))
 
     (subtest "Testing get-source."
-               (test-api
-                 (funcall
-                   notepad-session
-                   :get-source)
-                 :content-length (write-to-string
-                                   (+ 1252 (length (win-app-driver::get-value $json))))
-                 :path           (concatenate
-                                   'string
-                                   base
-                                   "/source")
-                 :app            (ok
-                                   (win-app-driver::get-value $json))
-                 :platform-name  (ok
-                                   (win-app-driver::get-value $json))
-                 :value          (ok
-                                   (win-app-driver::get-value $json))))
-
-    (subtest "Testing get-title."
-               (test-api
-                 (funcall
-                   notepad-session
-                   :get-title)
-                 :content-length (write-to-string
-                                   (+ 92 (length (win-app-driver::get-value $json))))
-                 :path           (concatenate
-                                   'string
-                                   base
-                                   "/title")
-                 :app            (ok
-                                   (win-app-driver::get-value $json))
-                 :platform-name  (ok
-                                   (win-app-driver::get-value $json))
-                 :value          (ok
-                                   (win-app-driver::get-value $json))))
+             (test-api
+               (funcall
+                 notepad-session
+                 :get-source)
+               :content-length (write-to-string
+                                 (+ 1252 (length (win-app-driver::get-value $json))))
+               :path           (concatenate
+                                 'string
+                                 base
+                                 "/source")
+               :app            (ok
+                                 (win-app-driver::get-value $json))
+               :platform-name  (ok
+                                 (win-app-driver::get-value $json))
+               :value          (ok
+                                 (win-app-driver::get-value $json))))
 
     (subtest "Testing close-window."
              (test-api
@@ -942,11 +850,6 @@
                                    "/click"))))
     )
 
-  (subtest "Testing delete-session."
-           (test-api
-             (funcall notepad-session :delete-session)
-             :session-id     nil
-             :content-length "12"
-             :path           base))
+  (funcall notepad-session :delete-session)
   )
 

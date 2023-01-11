@@ -30,8 +30,7 @@
     :new-session
     :host *win-app-driver-host*
     :port *win-app-driver-port*
-    :app "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
-    :app-arguments "-private")
+    :app "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe")
 
   (let
     ((base (win-app-driver::session-data-base
