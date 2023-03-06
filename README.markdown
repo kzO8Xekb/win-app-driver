@@ -14,6 +14,7 @@ Thank you very much.
 1. [Steel Bank Common Lisp(SBCL) 2.2.4 for Windows](https://www.sbcl.org/)
 
 ### Common Lisp packages
+1. quicklisp
 1. alexandria
 1. cl-ppcre
 1. dexador

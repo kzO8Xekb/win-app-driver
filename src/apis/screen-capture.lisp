@@ -48,7 +48,6 @@
 ; Take Element Screenshot
 ; HTTP Command: GET
 ; Path:         /session/:sessionId/element/:id/screenshot
-; This function is not yet implemented.
 (defun take-element-screenshot (session element-id)
   (send-command
     session

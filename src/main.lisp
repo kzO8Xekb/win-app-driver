@@ -28,38 +28,48 @@
                                    (app-top-level-window nil)
                                    (app-working-dir nil)
                                    (device-name "WindowsPC")
+                                   (msex-experimental-webdriver nil)
+                                   (msex-wait-for-app-launch nil)
                                    (platform-name "Windows")
                                    (platform-version nil))
   "make-desired-capabilities
-_/_/_/ 概要 _/_/_/
-WinAppDriver serverとのsessionを確立するために必要なdesired capabilitiesを作成します。
+_/_/_/ summary _/_/_/
+Create the desired capabilities required to establish a session with the WinAppDriver server.
 
-_/_/_/ 引数 _/_/_/
+_/_/_/ arguments _/_/_/
 app,                  [key]app:               Application identifier or executable full path. ex. Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge
 app-arguments,        [key]appArguments:      Application launch arguments. ex. https://github.com/Microsoft/WinAppDriver
 app-top-level-window, [key]appTopLevelWindow: Existing application top level window to attach to. ex. 0xB822E2
 app-working-dir,      [key]appWorkingDir:     Application working directory (Classic apps only). ex. C:\Temp
 device-name,          [key]deviceName:        Application working device type name. ex. WindowsPC
+msex-experimental-webdriver, [key]ms:experimental-webdriver: This capability will provide performance improvements with XPath and improve overall element handling. Specify T if you want it to be enabled.
+msex-wait-for-app-launch, [key]ms:waitForAppLaunch: Specifiy the waiting time in seconds for the WinAppDriver server to launch the application. The limit for this is 50 seconds. ex. 25
 platform-name,        [key]platformName:      Target platform name. ex. Windows
 platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
-(concatenate
-  'string
-  (jonathan:to-json
-    `(:|desiredCapabilities|
-       (,@(aif app
-               `(:|app| ,it))
-        ,@(aif app-arguments
-               `(:|appArguments| ,it))
-        ,@(aif app-top-level-window
-               `(:|appTopLevelWindow| ,it))
-        ,@(aif app-working-dir
-               `(:|appWorkingDir| ,it))
-        ,@(aif device-name
-               `(:|deviceName| ,it))
-        ,@(aif platform-name
-               `(:|platformName| ,it))
-        ,@(aif platform-version
-               `(:|platformVersion| ,it)))))))
+  (let
+    ((jonathan:*false-value* :false))
+    (concatenate
+      'string
+      (jonathan:to-json
+        `(:|desiredCapabilities|
+           (,@(aif app
+                   `(:|app| ,it))
+            ,@(aif app-arguments
+                   `(:|appArguments| ,it))
+            ,@(aif app-top-level-window
+                   `(:|appTopLevelWindow| ,it))
+            ,@(aif app-working-dir
+                   `(:|appWorkingDir| ,it))
+            ,@(aif device-name
+                   `(:|deviceName| ,it))
+            ,@(aif msex-experimental-webdriver
+                   `(:|ms:experimental-webdriver| ,it))
+            ,@(aif msex-wait-for-app-launch
+                   `(:|ms:waitForAppLaunch| ,(prin1-to-string it)))
+            ,@(aif platform-name
+                   `(:|platformName| ,it))
+            ,@(aif platform-version
+                   `(:|platformVersion| ,it))))))))
 
 ;(lol:defmacro! return-win-app-driver-server-response (expr &body body)
 ; `(multiple-value-bind
@@ -119,7 +129,7 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     element-id2, string, Specify the element ID to be compared for this argument.
   :element-send-keys
     element-id, string, This argument should specify the element ID of the element you wish to operate on.
-    keys, list, List of keyboard actions to be sent to the WinAppDriver server. For more information on keyboard actions, see \"https://www.w3.org/TR/webdriver1/#keyboard-actions\".
+    keys, list,  of keyboard actions to be sent to the WinAppDriver server. For more information on keyboard actions, see \"https://www.w3.org/TR/webdriver1/#keyboard-actions\".
   :element-send-string (out of specification command)
     element-id, string                , This argument should specify the element ID of the element you wish to operate on.
     string,     [rest]string or symbol, Specify the string or symbol of keyboard action you want to send to the WinAppDriver server.
@@ -228,11 +238,13 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
     app-top-level-window, [key]string, Existing application top level window to attach to. ex. \"0xB822E2\"
     app-working-dir,      [key]string, Application working directory (Classic apps only). ex. \"C:\\Temp\"
     device-name,          [key]string, Application working device type name. ex. \"WindowsPC\"
+    msex-experimental-webdriver, [key]boolean: This capability will provide performance improvements with XPath and improve overall element handling. Specify T if you want it to be enabled.
+    msex-wait-for-app-launch, [key]fixnum: Specifies the time, in seconds, to wait after the launch of the application starts before attaching to a session with the application. The limit for this is 50 seconds. ex. 25
     platform-name,        [key]string, Target platform name. ex. \"Windows\"
     platform-version,     [key]string, Target platform version. ex. \"1.0\"
   :orientation
   :send-keys
-    keys, list, List of keyboard actions to be sent to the WinAppDriver server. For more information on keyboard actions, see \"https://www.w3.org/TR/webdriver1/#keyboard-actions\".
+    keys, list,  of keyboard actions to be sent to the WinAppDriver server. For more information on keyboard actions, see \"https://www.w3.org/TR/webdriver1/#keyboard-actions\".
   :send-string (out of specification command)
     string, [rest]string, Specify the string or symbol of keyboard action you want to send to the WinAppDriver server.
   :set-timeouts
@@ -304,26 +316,30 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                           (return-win-app-driver-server-response
                             (status session)))
                  (:new-session (&key
-                                 (app                  nil)
-                                 (app-arguments        nil)
-                                 (app-top-level-window nil)
-                                 (app-working-dir      nil)
-                                 (device-name          "WindowsPC")
-                                 (host                 "localhost")
-                                 (platform-name        "Windows")
-                                 (platform-version     nil)
-                                 (port                 4723))
+                                 (app                         nil)
+                                 (app-arguments               nil)
+                                 (app-top-level-window        nil)
+                                 (app-working-dir             nil)
+                                 (device-name                 "WindowsPC")
+                                 (msex-experimental-webdriver nil) ; for WAD v1.2.1 https://github.com/microsoft/WinAppDriver/releases/tag/v1.2.1
+                                 (msex-wait-for-app-launch    nil) ; for WAD v1.2.1 https://github.com/microsoft/WinAppDriver/releases/tag/v1.2.1
+                                 (host                        "localhost")
+                                 (platform-name               "Windows")
+                                 (platform-version            nil)
+                                 (port                        4723))
                                (setf session (make-session-data
                                                :host host
                                                :port port
                                                :capabilities (make-desired-capabilities
-                                                               :app                  app
-                                                               :app-arguments        app-arguments
-                                                               :app-top-level-window app-top-level-window
-                                                               :app-working-dir      app-working-dir
-                                                               :device-name          device-name
-                                                               :platform-name        platform-name
-                                                               :platform-version     platform-version)))
+                                                               :app                         app
+                                                               :app-arguments               app-arguments
+                                                               :app-top-level-window        app-top-level-window
+                                                               :app-working-dir             app-working-dir
+                                                               :device-name                 device-name
+                                                               :msex-experimental-webdriver msex-experimental-webdriver
+                                                               :msex-wait-for-app-launch    msex-wait-for-app-launch
+                                                               :platform-name               platform-name
+                                                               :platform-version            platform-version)))
                                (return-win-app-driver-server-response
                                  (new-session session)
                                  (setf (session-data-id session) (getf (jonathan:parse $json) :|sessionId|))

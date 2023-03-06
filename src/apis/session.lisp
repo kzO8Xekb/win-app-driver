@@ -25,6 +25,16 @@
 ;; Command Summary
 ;; see https://github.com/microsoft/WinAppDriver/blob/master/Docs/SupportedAPIs.md
 
+(defun get-msex-wait-for-app-launch (capabilities)
+  (aif (getf                                                   ; Get the value of ms:waitForAppLaunch from desired capabilities.
+         (getf 
+           (jonathan:parse capabilities)
+           :|desiredCapabilities|)
+         :|ms:waitForAppLaunch|)
+       (+ (read-from-string it)                                ; Convert to numerical values and add margins.
+          dex:*default-read-timeout*)                          ; Increase the read time, as it may time out if the default value is used.
+       dex:*default-read-timeout*))                            ; default value.
+
 ; New Session
 ; HTTP Command: POST
 ; Path:         /session
@@ -35,7 +45,9 @@
     session
     :post
     ("/session")
-    (session-data-capabilities session)))
+    (session-data-capabilities session)
+    (get-msex-wait-for-app-launch                              ; for WinAppDriver v1.2.1
+      (session-data-capabilities session))))
 
 ; Get Sessions
 ; HTTP Command: GET

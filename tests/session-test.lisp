@@ -132,7 +132,8 @@
            (test-api
              (funcall session1 :get-sessions)
              :session-id     nil
-             :content-length  "1783"
+             :content-length  (write-to-string
+                                (length $json))
              :path            "/sessions"
              :app             (ok
                                 (win-app-driver::get-value $json))

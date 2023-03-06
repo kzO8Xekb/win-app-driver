@@ -165,7 +165,7 @@
            win-app-driver::condition-incorrect-port-number)
          )
 
-(subtest "Testing generate-desired-capabilities"
+(subtest "Testing make-desired-capabilities"
          (is
            (win-app-driver::make-desired-capabilities)
            "{\"desiredCapabilities\":{\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\"}}")
@@ -223,7 +223,12 @@
              :app-working-dir "C:\\Temp"
              :platform-version "1.0")
            "{\"desiredCapabilities\":{\"app\":\"Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge\",\"appTopLevelWindow\":\"0xB822E2\",\"appWorkingDir\":\"C:\\\\Temp\",\"deviceName\":\"WindowsPC\",\"platformName\":\"Windows\",\"platformVersion\":\"1.0\"}}")
-         )
+         (is
+           (win-app-driver::make-desired-capabilities :ms-experimental-webdriver t)
+           "{\"desiredCapabilities\":{\"deviceName\":\"WindowsPC\",\"ms:experimental-webdriver\":true,\"platformName\":\"Windows\"}}")
+         (is
+           (win-app-driver::make-desired-capabilities :ms-wait-for-app-launch "25")
+           "{\"desiredCapabilities\":{\"deviceName\":\"WindowsPC\",\"ms:waitForAppLaunch\":\"25\",\"platformName\":\"Windows\"}}"))
 
 (subtest "Test for macro invoke-win-app-driver-api"
          (is-expand

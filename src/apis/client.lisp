@@ -33,47 +33,48 @@
   (base          ""))
 
 ;;; HTTP/HTTPS Utilities
-(lol:defmacro! protect-for-timeout (&rest body)
- `(let
-    (,g!dexador-response-hash-table
-     ,g!dexador-response-quri-uri
-     ,g!server-response-message
-     ,g!server-response-status-code
-     (,g!sleep-time -1))
-    (tagbody
-      ,g!tag-start                                               ; 処理巻き戻し時の開始点
-      (handler-bind
-        ((error                                                  ; errorコンディションを取得した場合
-           (lambda (condition)
-             (when (= 12002 (winhttp::win-error-code condition)) ; timeoutした場合
-               (progn
-                 (incf ,g!sleep-time)                            ; 待機時間を延ばす
-                 (sleep ,g!sleep-time)                           ; 待機
-                 (go ,g!tag-start))))))                          ; 巻き戻し!
-        (progn
-          (setf
-            (values
-              ,g!server-response-message
-              ,g!server-response-status-code
-              ,g!dexador-response-hash-table
-              ,g!dexador-response-quri-uri)
-            (progn ,@body))                                      ; 処理本体実行部
-          (go ,g!tag-finish)))                                   ; 処理終了
-      ,g!tag-finish)
-    (values                                                      ; dexadorの返り値を多値で透過的に返す
-      ,g!server-response-message
-      ,g!server-response-status-code
-      ,g!dexador-response-hash-table
-      ,g!dexador-response-quri-uri)))
+;(lol:defmacro! protect-for-timeout (&rest body)
+; `(let
+;    (,g!dexador-response-hash-table
+;     ,g!dexador-response-quri-uri
+;     ,g!server-response-message
+;     ,g!server-response-status-code
+;     (,g!sleep-time -1))
+;    (tagbody
+;      ,g!tag-start                                               ; 処理巻き戻し時の開始点
+;      (handler-bind
+;        ((error                                                  ; errorコンディションを取得した場合
+;           (lambda (condition)
+;             (when (= 12002 (winhttp::win-error-code condition)) ; timeoutした場合
+;               (progn
+;                 (incf ,g!sleep-time)                            ; 待機時間を延ばす
+;                 (sleep ,g!sleep-time)                           ; 待機
+;                 (go ,g!tag-start))))))                          ; 巻き戻し!
+;        (progn
+;          (setf
+;            (values
+;              ,g!server-response-message
+;              ,g!server-response-status-code
+;              ,g!dexador-response-hash-table
+;              ,g!dexador-response-quri-uri)
+;            (progn ,@body))                                      ; 処理本体実行部
+;          (go ,g!tag-finish)))                                   ; 処理終了
+;      ,g!tag-finish)
+;    (values                                                      ; dexadorの返り値を多値で透過的に返す
+;      ,g!server-response-message
+;      ,g!server-response-status-code
+;      ,g!dexador-response-hash-table
+;      ,g!dexador-response-quri-uri)))
 
 ;(declaim (inline post-json))
-(defun post-json (uri content)
+(defun post-json (uri content &optional (read-timeout))
   "uriのエンドポイントにjsonをPOSTします。"
   (dex:post uri                                                  ; uriにpostする
             :content content                                     ; postする文字列
             :headers `(("accept"       . ,+http-header-accept+)  ; headerの設定
                        ("accept-type"  . ,+http-header-accept+)
-                       ("content-type" . ,+http-header-content-type+))))
+                       ("content-type" . ,+http-header-content-type+))
+            :read-timeout read-timeout))
 
 ;(declaim (inline post-json2))
 (defun post-json2 (uri content)
@@ -92,16 +93,15 @@
 ;; endpoint, string:       WinAppServerのエンドポイントを文字列で指定します。
 ;; content,  [key]content: POSTする内容を指定します。
 ;;-------------------------------------------------------------
-(lol:defmacro! invoke-win-app-driver-api (func endpoint &key (content nil))
+(lol:defmacro! invoke-win-app-driver-api (func endpoint &key (content nil) (read-timeout dex:*default-read-timeout*))
  `(multiple-value-bind
     (,g!server-response-message                                ; WinAppDriverサーバーからのレスポンス。JSONで返ってくる。
-     ,g!server-response-status-code                            ; HTTPレスポンス
-     ,g!dexador-response-hash-table                            ; 不明。何かのハッシュテーブル。
-     ,g!dexador-response-quri-uri)                             ; QURI.URI.HTTP:URI-HTTP, クエリを投げたURI
-    (protect-for-timeout                                       ; タイムアウトを防ぐためにコンディションシステムで包むマクロ
-      ,(if (null content)                                      ; contentはPOST以外はnilなので分岐する。
-         `(funcall ,func ,endpoint)                            ; GET or DELETEの場合
-         `(funcall ,func ,endpoint ,content)))                 ; POSTの場合
+      ,g!server-response-status-code                           ; HTTPレスポンス
+      ,g!dexador-response-hash-table                           ; 不明。何かのハッシュテーブル。
+      ,g!dexador-response-quri-uri)                            ; QURI.URI.HTTP:URI-HTTP, クエリを投げたURI
+    ,(if (null content)                                        ; contentはPOST以外はnilなので分岐する。
+       `(funcall ,func ,endpoint)                              ; GET or DELETEの場合
+       `(funcall ,func ,endpoint ,content ,read-timeout))   ; POSTの場合
     (values                                                    ; HTTPクライアントの返り値を透過的に返す。
       ,g!server-response-message
       ,g!server-response-status-code
@@ -114,11 +114,12 @@
 (defun ad-delete (endpoint)
   (invoke-win-app-driver-api #'dexador:delete endpoint))
 
-(defun ad-post (endpoint content)
+(defun ad-post (endpoint content &optional read-timeout)
   (invoke-win-app-driver-api
     #'post-json
     endpoint
-    :content content))
+    :content content
+    :read-timeout read-timeout))
 
 (defun ipv4-address-p (host-identifier)
   "引数で指定した文字列がIPv4アドレスの文字列表現であるか照合します。"
@@ -236,7 +237,7 @@ t or nil,      関数の成功時はt，失敗時はnil。"
       ,@directories)))
 
 ;(defmacro send-command (session method-type endpoint &optional (content nil))
-(defmacro send-command (session method-type endpoint &optional (content "{\"\": \"\"}"))
+(defmacro send-command (session method-type endpoint &optional (content "{\"\": \"\"}") (read-timeout dex:*default-read-timeout*))
   (cond
     ((eq method-type :get)
      `(progn
@@ -246,7 +247,8 @@ t or nil,      関数の成功時はt，失敗時はnil。"
      `(progn
         (ad-post
           (generate-endpoint-uri ,session ,@endpoint)
-          ,content)))
+          ,content
+          ,read-timeout)))
     ((eq method-type :delete)
      `(progn
         (ad-delete
