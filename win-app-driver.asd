@@ -21,7 +21,7 @@
 ;;;; SOFTWARE.
 
 (defsystem "win-app-driver"
-           :version "0.2.0"
+           :version "0.2.1"
            :author "kzO8Xekb"
            :license "MIT"
            :depends-on ("alexandria"
@@ -35,26 +35,29 @@
                                  :components
                                  ((:file "package")
                                   (:file "main"
-                                         :depends-on ("package" "apis" "conditions" "utilities"))
+                                         :depends-on ("package" "apis" "client" "conditions" "utilities"))
                                   (:module "apis"
-                                           :depends-on ("package" "conditions" "utilities")
+                                           :depends-on ("package" "client" "conditions" "utilities")
                                            :components
-                                           ((:file "actions"             :depends-on ("client" "content"))
-                                            (:file "appium"              :depends-on ("client"))
-                                            (:file "client")
+                                           ((:file "actions" :depends-on ("content"))
+                                            (:file "appium")
                                             (:file "content")
-                                            (:file "contexts"            :depends-on ("client" "content"))
-                                            (:file "document"            :depends-on ("client"))
-                                            (:file "element-interaction" :depends-on ("client"))
-                                            (:file "element-retrieval"   :depends-on ("client"))
-                                            (:file "element-state"       :depends-on ("client"))
-                                            (:file "location"            :depends-on ("client"))
-                                            (:file "navigation"          :depends-on ("client"))
-                                            (:file "orientation"         :depends-on ("client"))
-                                            (:file "screen-capture"      :depends-on ("client"))
-                                            (:file "session"             :depends-on ("client"))
-                                            (:file "status"              :depends-on ("client"))
-                                            (:file "timeouts"            :depends-on ("client"))))
+                                            (:file "contexts" :depends-on ("content"))
+                                            (:file "document")
+                                            (:file "element-interaction")
+                                            (:file "element-retrieval")
+                                            (:file "element-state")
+                                            (:file "location")
+                                            (:file "navigation")
+                                            (:file "orientation")
+                                            (:file "screen-capture")
+                                            (:file "session")
+                                            (:file "status")
+                                            (:file "timeouts")))
+                                  (:module "client"
+                                           :depends-on ("package" "utilities" "conditions")
+                                           :components
+                                           ((:file "client")))
                                   (:module "conditions"
                                            :depends-on ("package" "utilities")
                                            :components

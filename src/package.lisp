@@ -1,6 +1,6 @@
 ;;;; MIT License
 ;;;; 
-;;;; Copyright (c) 2022 kzO8Xekb
+;;;; Copyright (c) 2022-2023 kzO8Xekb
 ;;;; 
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;;;; of this software and associated documentation files (the "Software"), to deal
@@ -64,6 +64,7 @@
     :session-data-host
     :session-data-id
     :session-data-port
+    :with-session
     )
 
   (:export

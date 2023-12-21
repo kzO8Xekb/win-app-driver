@@ -1,6 +1,6 @@
 ;;; MIT License
 ;;; 
-;;; Copyright (c) 2022 kzO8Xekb
+;;; Copyright (c) 2022-2023 kzO8Xekb
 ;;; 
 ;;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;;; of this software and associated documentation files (the "Software"), to deal
@@ -84,7 +84,7 @@
 (defmacro flet* (fs &body body)
   (if (null body) nil
     (do
-      ((result `(progn ,@body) `(flet ,@(cons `(,itr) `(,result))))
+      ((result `(let () ,@body) `(flet ,@(cons `(,itr) `(,result))))
        (connect (cdr (reverse fs)) (cdr connect))
        (itr (car (reverse fs)) (car connect)))
       ((null itr) `(,@result)))))

@@ -1,6 +1,6 @@
 ;;;; MIT License
 ;;;; 
-;;;; Copyright (c) 2022 kzO8Xekb
+;;;; Copyright (c) 2022-2023 kzO8Xekb
 ;;;; 
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;;;; of this software and associated documentation files (the "Software"), to deal
@@ -529,4 +529,69 @@ platform-version,     [key]platformVersion:   Target platform version. ex. 1.0"
                                         (get-window-handles session))))
           self (lambda (&rest args)
                  (apply impl args)))))))
+
+(defun expand-with-session-initialize-forms (session args)
+  "expand-with-session-initialize-forms
+_/_/_/ summary _/_/_/
+This function is an auxiliary function used with the macro function with-session. It takes as arguments the session's closure and a list of variables for initialisation and expands them into a form for initialising the session.
+
+_/_/_/ arguments _/_/_/
+session, closure, WAD session.
+args, list, List of arguments for new-sesssion."
+  (destructuring-bind
+    (&key (app                         "Root")
+          (app-arguments               nil)
+          (app-top-level-window        nil)
+          (app-working-dir             nil)
+          (device-name                 "WindowsPC")
+          (msex-experimental-webdriver nil) ; for WAD v1.2.1 https://github.com/microsoft/WinAppDriver/releases/tag/v1.2.1
+          (msex-wait-for-app-launch    nil) ; for WAD v1.2.1 https://github.com/microsoft/WinAppDriver/releases/tag/v1.2.1
+          (host                        "localhost")
+          (platform-name               "Windows")
+          (platform-version            nil)
+          (port                        4723))
+    args
+    `(funcall ,session :new-session
+              :app ,app
+              :app-arguments ,app-arguments
+              :app-top-level-window ,app-top-level-window
+              :app-working-dir ,app-working-dir
+              :device-name ,device-name
+              :msex-experimental-webdriver ,msex-experimental-webdriver
+              :msex-wait-for-app-launch ,msex-wait-for-app-launch
+              :host ,host
+              :platform-name ,platform-name
+              :platform-version ,platform-version
+              :port ,port)))
+
+(defmacro! with-session ((name &rest initialize-args) &body body)
+  "with-session
+_/_/_/ summary _/_/_/
+ This macro function to generate a WinAppDriver session context.
+ The first argument specifies the name of the WinAppDriver session context to be generated and a list of options for the new-session instruction, while the second and lower arguments specify the code block to be executed. 
+ The macro function with-session automatically executes the delete-session instruction on exit.
+
+_/_/_/ arguments _/_/_/
+name,                 symbol, Specify WAD session symbol.
+initialize-args,  [rest]args, List of arguments for new-sesssion options.
+body,            [body]codes, Specify the program code you want to run."
+  (multiple-value-bind
+    (forms decls)
+    (uiop:parse-body body)
+    `(let
+       ()
+       ,@decls
+       (let
+         ((,g!session (win-app-driver:create-session)))
+         (unwind-protect
+           (win-app-driver::flet*
+             ((,name (&rest ,g!session-command-args)
+                     (apply ,g!session ,g!session-command-args))
+              (,g!progn-forms () ,@forms))
+             (declare (dynamic-extent (function ,g!progn-forms)))
+             ,(win-app-driver::expand-with-session-initialize-forms
+                g!session
+                initialize-args)
+             (,g!progn-forms))
+           (funcall ,g!session :delete-session))))))
 
